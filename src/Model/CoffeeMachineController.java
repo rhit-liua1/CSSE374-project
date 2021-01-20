@@ -18,6 +18,17 @@ public class CoffeeMachineController {
         this.status = status == 0 ? CoffeeMachineStatus.AVAILABLE : CoffeeMachineStatus.UNAVAILABLE;
     }
 
+    @Override
+    public String toString() {
+        return "CoffeeMachineController{" +
+                "id=" + id +
+                ", address=" + address +
+                ", type=" + type +
+                ", status=" + status +
+                ", lastestOrderID=" + lastestOrderID +
+                '}';
+    }
+
     enum CoffeeMachineStatus{
         AVAILABLE,
         UNAVAILABLE;

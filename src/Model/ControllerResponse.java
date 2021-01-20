@@ -25,8 +25,6 @@ public class ControllerResponse extends Response{
         this.errCode = -1;
     }
 
-
-
     public String getErrDesc() {
         return errDesc;
     }

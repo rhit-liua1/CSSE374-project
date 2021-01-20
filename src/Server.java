@@ -1,7 +1,4 @@
-import Model.Address;
-import Model.CoffeeMachineController;
-import Model.Order;
-import Model.OrderManager;
+import Model.*;
 
 import java.util.Scanner;
 
@@ -12,14 +9,11 @@ public class Server {
 
     public Server() {
         isServerOn = true;
-        // Initialize Addresses
-        // Initialize Coffee Machines
         orderManager = new OrderManager();
     }
 
     public void run() {
         System.out.println("[Server] Welcome to the Coffee Machine Management Platform!");
-
         int globalOrderCounter = 0;
         Scanner commandScanner = new Scanner(System.in);
         while(isServerOn){
@@ -51,23 +45,36 @@ public class Server {
                     }
                     System.out.println(sb.toString());
                     sb.append("Now, please enter a number to choose a coffee machine: ");
-                    int orderInputAddressNumber = Integer.parseInt(commandScanner.nextLine());
+                    int orderInputMachineNumber = Integer.parseInt(commandScanner.nextLine());
                     System.out.println("Choose a drink from below: ");
                     System.out.println("> Americano : Regular caffeinated coffee");
                     System.out.println("> Latte : Coffee drink with milk and whipped cream");
                     System.out.println("> Decaff : Regular decaffeinated coffee");
-                    System.out.println("> Expresso : Coffee concentrated");
+                    System.out.println("> Espresso : Coffee concentrated");
                     System.out.println("> Colombia Dark : Stronger roast with Colombian beans");
                     System.out.println("> Pumpkin Spice : Seasonal drink with Pumpkin");
                     System.out.println("Please Enter the name of the drink");
                     String orderInputDrink = commandScanner.nextLine().toLowerCase();
-                    //String orderInputCondiments = commandScanner.nextLine();
-
+//                    String orderInputCondiments = commandScanner.nextLine();
+//                    System.out.println("order machine num "+orderInputMachineNumber);
+//                    System.out.println("machine "+orderManager.getCoffeeMachineControllerDB().get(orderInputMachineNumber).toString());
+                    Address address = orderManager.getCoffeeMachineControllerDB().get(orderInputMachineNumber).getAddress();
                     // Create Order
-                    //Order order = new Order(globalOrderCounter++, orderInputDrink, address);
-                    //orderManager.startOrder(order);
+                    Order order = new Order(globalOrderCounter++, orderInputDrink, address);
+                    System.out.println("[Server]> Sending order");
+                    orderManager.startOrder(order, orderInputMachineNumber);
+                    AppResponse ar = orderManager.getAppResponse();
+                    System.out.println("--------------------------------------------------");
+                    System.out.println();
+                    if (ar.getStatus() == 1) {
+                        System.out.println(ar.getStatusMsg());
+                        System.out.println(ar.getErrMsg());
+                    } else {
+                        System.out.println(ar.getStatusMsg());
+                    }
+                    System.out.println();
+                    System.out.println("--------------------------------------------------");
                     break;
-
                 default:
                     System.out.println("[Server] Command not recognized.");
                     break;
