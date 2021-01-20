@@ -3,31 +3,24 @@ package Model;
 public class Order {
 
     private int orderId;
-    private CoffeeMachineController coffeeMachine;
+//    private CoffeeMachineController coffeeMachine;
     private String drink;
     private Address address;
 
-    public Order(int orderId, CoffeeMachineController coffeeMachine, String drink) {
+    public Order(int orderId, String drink, Address address) {
         this.orderId = orderId;
-        this.coffeeMachine = coffeeMachine;
+//        this.coffeeMachine = coffeeMachine;
         this.drink = drink;
+        this.address = address;
     }
 
-//    public AppResponse initMsg() {
-//        if (coffeeMachine.getStatus() == 0) {
-//            AppResponse ar = new AppResponse(orderId, );
-//        } else {
-//
-//        }
+//    public CoffeeMachineController getCoffeeMachine() {
+//        return coffeeMachine;
 //    }
-
-    public CoffeeMachineController getCoffeeMachine() {
-        return coffeeMachine;
-    }
-
-    public void setCoffeeMachine(CoffeeMachineController coffeeMachine) {
-        this.coffeeMachine = coffeeMachine;
-    }
+//
+//    public void setCoffeeMachine(CoffeeMachineController coffeeMachine) {
+//        this.coffeeMachine = coffeeMachine;
+//    }
 
     public String getDrink() {
         return drink;

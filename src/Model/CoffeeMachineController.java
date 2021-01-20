@@ -11,7 +11,7 @@ public class CoffeeMachineController {
     private CoffeeMachineStatus status;
     private int lastestOrderID;
 
-    public CoffeeMachineController(Address address, int id, String type, int status) {
+    public CoffeeMachineController(int id, String type, int status, Address address) {
         this.address = address;
         this.id = id;
         this.type = type.equals("simple") ? CoffeeMachineType.SIMPLE : CoffeeMachineType.ADVANCED;
