@@ -11,13 +11,15 @@ public class AppResponse extends Response{
     public AppResponse(int orderId, int status, int machineId, String errMsg) {
         super(orderId, status);
         this.machineId = machineId;
-        if (status == 0){
-            this.statusMsg = PREPARED;
-            this.errMsg = "";
-        } else {
-            this.statusMsg = CANCELLED;
-            this.errMsg = errMsg;
-        }
+        this.statusMsg = CANCELLED;
+        this.errMsg = errMsg;
+    }
+
+    public AppResponse(int orderId, int status, int machineId) {
+        super(orderId, status);
+        this.machineId = machineId;
+        this.statusMsg = PREPARED;
+        this.errMsg = "";
     }
 
     public int getMachineId() {
