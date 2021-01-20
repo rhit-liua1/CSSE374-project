@@ -49,6 +49,7 @@ public class CoffeeMachineController {
     }
 
     public int getStatus() {
+        System.out.println("[Controller] Replying with status: " + status);
         return status == CoffeeMachineStatus.AVAILABLE ? 0 : 1;
     }
 
