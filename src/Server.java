@@ -9,7 +9,7 @@ public class Server {
 
     }
 
-    private void run() {
+    public void run() {
         System.out.println("[Server] Welcome to the Game Server!");
         Scanner commandScanner = new Scanner(System.in);
         int globalPlayerIdCounter = 0;

@@ -2,11 +2,14 @@ package Model;
 
 import Model.Address;
 
+import java.util.Random;
+
 public class CoffeeMachineController {
     private int id;
     private Address address;
     private CoffeeMachineType type;
     private CoffeeMachineStatus status;
+    private int lastestOrderID;
 
     public CoffeeMachineController(Address address, int id, String type, int status) {
         this.address = address;
@@ -24,6 +27,11 @@ public class CoffeeMachineController {
         SIMPLE,
         ADVANCED
     }
+
+//    public ControllerResponse initMsg() {
+//        ControllerResponse response = new ControllerResponse(orderID, status, errCode);
+//        return response;
+//    }
 
     public void setType(CoffeeMachineType type) {
         this.type = type;
@@ -59,5 +67,10 @@ public class CoffeeMachineController {
 
     public void setType(String type) {
         this.type = type.equals("simple") ? CoffeeMachineType.SIMPLE : CoffeeMachineType.ADVANCED;
+    }
+
+    public int getErrorType() {
+        Random r = new Random();
+        return r.nextInt(26-2) > 12 ? 26 : 2;
     }
 }

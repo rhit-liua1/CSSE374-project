@@ -22,6 +22,14 @@ public class AppResponse extends Response{
         this.errMsg = "";
     }
 
+    public AppResponse(int orderId) {
+        super(orderId, -1);
+        this.machineId = -1;
+        this.statusMsg = CANCELLED;
+        this.errMsg = "Coffee Machine Not Found";
+    }
+
+
     public int getMachineId() {
         return machineId;
     }
