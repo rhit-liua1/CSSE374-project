@@ -1,0 +1,111 @@
+@startuml
+class Model.OrderManager {
+- CoffeeMachineController orderedCoffeeMachine
+- Order order
+- ArrayList<CoffeeMachineController> coffeeMachineControllerDB
+- AppResponse appResponse
+- ControllerResponse conResponse
+- ArrayList<String> coffeeTypes
++ void startOrder(Order,int)
+- void findCoffeeMachine(int)
+- void getControllerResponse()
+- void generateAppResponse()
++ AppResponse getAppResponse()
++ CoffeeMachineController getOrderedCoffeeMachine()
++ Order getOrder()
++ ArrayList<CoffeeMachineController> getCoffeeMachineControllerDB()
++ ArrayList<String> getCoffeeTypes()
++ ControllerResponse getConResponse()
+}
+class Model.Address {
+- String street
+- String zip
++ String getStreet()
++ void setStreet(String)
++ String getZip()
++ void setZip(String)
++ String toString()
+}
+class ServerObservableState {
+}
+class Model.Order {
+- int orderId
+- String drink
+- Address address
++ String getDrink()
++ void setDrink(String)
++ Address getAddress()
++ void setAddress(Address)
++ int getOrderId()
++ void setOrderId(int)
+}
+abstract class Model.Response {
+- int orderId
+- int status
++ int getOrderId()
++ void setOrderId(int)
++ int getStatus()
++ void setStatus(int)
+}
+class Model.Condiment {
+- int condimentId
+- String name
++ void setCondimentId(int)
++ void setName(String)
++ int getCondimentId()
++ String getName()
+}
+class Server {
+- boolean isServerOn
+- {static} OrderManager orderManager
++ void run()
+}
+class Model.CoffeeMachineController {
+- int id
+- Address address
+- CoffeeMachineType type
+- CoffeeMachineStatus status
+- int lastestOrderID
++ String toString()
++ void setType(CoffeeMachineType)
++ int getStatus()
++ void setStatus(int)
++ Address getAddress()
++ void setAddress(Address)
++ int getId()
++ void setId(int)
++ String getType()
++ void setType(String)
++ int getErrorType()
+}
+class Model.ControllerResponse {
+- String errDesc
+- int errCode
++ String getErrDesc()
++ void setErrDesc(String)
++ int getErrCode()
++ void setErrCode(int)
+}
+class Model.AppResponse {
+- int machineId
+- String statusMsg
+- String errMsg
+- {static} String CANCELLED
+- {static} String PREPARED
++ int getMachineId()
++ void setMachineId(int)
++ String getStatusMsg()
++ void setStatusMsg(String)
++ String getErrMsg()
++ void setErrMsg(String)
++ {static} String getCANCELLED()
++ {static} String getPREPARED()
+}
+class Main {
++ {static} void main(String[])
+}
+
+
+Model.Response <|-- Model.ControllerResponse
+Model.Response <|-- Model.AppResponse
+@enduml
