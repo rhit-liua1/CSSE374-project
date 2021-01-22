@@ -1,5 +1,5 @@
 @startuml
-class Data.OrderManager {
+class Domain.OrderManager {
 - CoffeeMachineController orderedCoffeeMachine
 - Order order
 - ArrayList<CoffeeMachineController> coffeeMachineControllerDB
@@ -26,9 +26,7 @@ class Data.Address {
 + void setZip(String)
 + String toString()
 }
-class ServerObservableState {
-}
-class Data.Order {
+class Domain.Order {
 - int orderId
 - String drink
 - Address address
@@ -39,7 +37,7 @@ class Data.Order {
 + int getOrderId()
 + void setOrderId(int)
 }
-abstract class Data.Response {
+abstract class Data.Responses.Response {
 - int orderId
 - int status
 + int getOrderId()
@@ -55,12 +53,12 @@ class Data.Condiment {
 + int getCondimentId()
 + String getName()
 }
-class Server {
+class Server.Server {
 - boolean isServerOn
 - {static} OrderManager orderManager
 + void run()
 }
-class Data.CoffeeMachineController {
+class Domain.CoffeeMachineController {
 - int id
 - Address address
 - CoffeeMachineType type
@@ -78,7 +76,7 @@ class Data.CoffeeMachineController {
 + void setType(String)
 + int getErrorType()
 }
-class Data.ControllerResponse {
+class Data.Responses.ControllerResponse {
 - String errDesc
 - int errCode
 + String getErrDesc()
@@ -86,7 +84,7 @@ class Data.ControllerResponse {
 + int getErrCode()
 + void setErrCode(int)
 }
-class Data.AppResponse {
+class Data.Responses.AppResponse {
 - int machineId
 - String statusMsg
 - String errMsg
@@ -106,6 +104,6 @@ class Main {
 }
 
 
-Data.Response <|-- Data.ControllerResponse
-Data.Response <|-- Data.AppResponse
+Data.Responses.Response <|-- Data.Responses.ControllerResponse
+Data.Responses.Response <|-- Data.Responses.AppResponse
 @enduml
