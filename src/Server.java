@@ -34,7 +34,7 @@ public class Server {
                     System.out.println("[Server] Command received: neworder");
                     StringBuilder sb = new StringBuilder();
                     sb.append("[Client] Select a coffee machine: \n");
-                    for (CoffeeMachineController cm : orderManager.getCoffeeMachineControllerDB()) {
+                    for (CoffeeMachineController2 cm : orderManager.getCoffeeMachineControllerDB()) {
                         sb.append("> (");
                         sb.append(cm.getId());
                         sb.append(") -- Type: ");
@@ -59,22 +59,39 @@ public class Server {
                     System.out.println("> Pumpkin Spice : Seasonal drink with Pumpkin");
                     System.out.println("Please Enter the name of the drink");
                     String orderInputDrink = commandScanner.nextLine().toLowerCase();
+
                     if (!orderManager.getCoffeeTypes().contains(orderInputDrink)) {
                         System.out.println("[Client] Coffee type doesn't exist. Please try again");
                         break;
                     }
-//                    String orderInputCondiments = commandScanner.nextLine();
-//                    System.out.println("order machine num "+orderInputMachineNumber);
-//                    System.out.println("machine "+orderManager.getCoffeeMachineControllerDB().get(orderInputMachineNumber).toString());
+
+                    System.out.println("Select condiments from below: ");
+                    System.out.println("> Cream : Diary based individual serving");
+                    System.out.println("> Sugar : Case sugar teaspoon");
+                    System.out.println("> NutraSweet : Individual serving");
+                    System.out.println("Please Enter the name of the condiments, separate with spaces");
+                    String orderInputCondiments = commandScanner.nextLine().toLowerCase();
+                    String[] condiments = null;
+                    if (orderInputCondiments.isEmpty()) {
+                        condiments = new String[] {"no condiment"};
+                    } else {
+                        condiments = orderInputCondiments.trim().split(" ");
+                        boolean flag = false;
+                        for (String condiment : condiments) {
+                            if (!orderManager.getCoffeeCondiments().contains(condiment)) {
+                                System.out.println("[Client] Condiment type doesn't exist. Please try again");
+                                flag = true;
+                                break;
+                            }
+                        }
+                        if (flag) break;
+                    }
+
                     Address address = orderManager.getCoffeeMachineControllerDB().get(orderInputMachineNumber).getAddress();
-                    // Create Order
-                    Order order = new Order(globalOrderCounter++, orderInputDrink, address);
                     System.out.println("[Client] Order generated");
                     System.out.println("[Client] Sending order to system");
                     System.out.println();
-                    orderManager.startOrder(order, orderInputMachineNumber);
-
-                    AppResponse ar = orderManager.getAppResponse();
+                    AppResponse ar = orderManager.processOrder(globalOrderCounter++, orderInputDrink, address, orderInputMachineNumber, condiments);
                     System.out.println();
                     System.out.println("[Client] Received response from the system: ");
                     System.out.println("--------------------------------------------------");

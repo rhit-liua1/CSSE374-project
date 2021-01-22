@@ -1,7 +1,5 @@
 package Data;
 
-import java.util.ArrayList;
-
 public class AdvancedCoffeeMachineController extends CoffeeMachineController2{
 
     public AdvancedCoffeeMachineController(int id, String type, int status, Address address) {
@@ -17,8 +15,8 @@ public class AdvancedCoffeeMachineController extends CoffeeMachineController2{
     }
 
     @Override
-    void addCondiments(String condiment) {
-        this.ocb.addCondiment(condiment);
+    void addCondiments(String[] condiments) {
+        this.ocb.addCondiments(condiments);
     }
 
 }

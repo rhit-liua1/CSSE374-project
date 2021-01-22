@@ -15,7 +15,7 @@ public class SimpleCoffeeMachineController extends CoffeeMachineController2{
     }
 
     @Override
-    void addCondiments(String condiment) {
-        this.ocb.addCondiment(condiment);
+    void addCondiments(String[] condiments) {
+        this.ocb.addCondiments(condiments);
     }
 }

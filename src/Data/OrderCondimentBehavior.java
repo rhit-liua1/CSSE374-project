@@ -1,6 +1,6 @@
 package Data;
 
 public interface OrderCondimentBehavior {
-    void addCondiment(String condiment);
+    void addCondiments(String[] condiments);
 
 }

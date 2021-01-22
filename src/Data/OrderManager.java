@@ -3,106 +3,101 @@ package Data;
 import java.util.ArrayList;
 
 public class OrderManager {
-    private CoffeeMachineController orderedCoffeeMachine;
     private ArrayList<Order> orders;
-    private Order order;
-    private final ArrayList<CoffeeMachineController> coffeeMachineControllerDB;
-    private AppResponse appResponse;
-    private ControllerResponse conResponse;
+    private final ArrayList<CoffeeMachineController2> coffeeMachineControllerDB;
     private final ArrayList<String> coffeeTypes;
+    private final ArrayList<String> coffeeCondiments;
 
     public OrderManager() {
         this.coffeeMachineControllerDB = new ArrayList<>();
+        this.orders = new ArrayList<>();
         this.coffeeTypes = new ArrayList<>();
+        this.coffeeCondiments = new ArrayList<>();
         Address addr1 = new Address("200 N. Main", "47803");
         Address addr2 = new Address("3 S. Walnut", "60601");
         Address addr3 = new Address("875 Champlain Ct.", "47803");
         Address addr4 = new Address("18 Cana Ct.", "47804");
-        this.coffeeMachineControllerDB.add(0, new CoffeeMachineController(0, "simple", 1, addr4));
-        this.coffeeMachineControllerDB.add(1, new CoffeeMachineController(1, "simple", 0, addr1));
-        this.coffeeMachineControllerDB.add(2, new CoffeeMachineController(2, "advanced", 0, addr1));
-        this.coffeeMachineControllerDB.add(3, new CoffeeMachineController(3, "advanced", 1, addr2));
-        this.coffeeMachineControllerDB.add(4, new CoffeeMachineController(4, "simple", 0, addr2));
-        this.coffeeMachineControllerDB.add(5, new CoffeeMachineController(5, "advanced", 0, addr3));
+        this.coffeeMachineControllerDB.add(0, new SimpleCoffeeMachineController(0, "simple", 1, addr4));
+        this.coffeeMachineControllerDB.add(1, new SimpleCoffeeMachineController(1, "simple", 0, addr1));
+        this.coffeeMachineControllerDB.add(2, new AdvancedCoffeeMachineController(2, "advanced", 0, addr1));
+        this.coffeeMachineControllerDB.add(3, new AdvancedCoffeeMachineController(3, "advanced", 1, addr2));
+        this.coffeeMachineControllerDB.add(4, new SimpleCoffeeMachineController(4, "simple", 0, addr2));
+        this.coffeeMachineControllerDB.add(5, new AdvancedCoffeeMachineController(5, "advanced", 0, addr3));
         this.coffeeTypes.add("americano");
         this.coffeeTypes.add("latte");
         this.coffeeTypes.add("decaff");
         this.coffeeTypes.add("espresso");
         this.coffeeTypes.add("colombia dark");
         this.coffeeTypes.add("pumpkin spice");
+        this.coffeeCondiments.add("sugar");
+        this.coffeeCondiments.add("cream");
+        this.coffeeCondiments.add("nutrasweet");
     }
 
-    public void startOrder(Order order, int machineId) {
+    public AppResponse processOrder(int orderId, String drink, Address address, int machineId, String[] condiments) {
+        CoffeeMachineController2 cm = findCoffeeMachineById(machineId);
+        Order order = new Order(orderId, drink, address, cm, condiments);
         this.orders.add(order);
-        findCoffeeMachine(machineId);
-
-        if (this.orderedCoffeeMachine == null) {
-            this.conResponse = null;
-            this.appResponse = new AppResponse(order.getOrderId());
-        } else {
-            //getControllerResponse();
-            generateAppResponse();
-        }
+        return generateAppResponse(order.getOrderId(), machineId);
     }
 
-    private void findCoffeeMachine(int id) {
-        for (CoffeeMachineController cm : coffeeMachineControllerDB) {
+    // find coffee machine based on provided id
+    private CoffeeMachineController2 findCoffeeMachineById(int id) {
+        for (CoffeeMachineController2 cm : coffeeMachineControllerDB) {
             if (cm.getId() == id) {
-                this.orderedCoffeeMachine = cm;
-                break;
+                return cm;
             }
         }
+        return null;
     }
 
-    private void getControllerResponse(int orderID) {
-        System.out.println("[System] Sending Order to coffee machine controller no." + orderedCoffeeMachine.getId());
-        int status = orderedCoffeeMachine.getStatus();
-        if (status == 0) {
-            this.conResponse = new ControllerResponse(order.getOrderId(), status);
-            System.out.println("[System] Controller Response received. Coffee machine status=" + status);
-        } else {
-            this.conResponse = new ControllerResponse(order.getOrderId(), status, orderedCoffeeMachine.getErrorType());
-            System.out.println("[System] Controller Response received. Coffee machine status=" + status + ", Error=" + orderedCoffeeMachine.getErrorType());
-        }
-
-    }
-
-    private void generateAppResponse() {
+    private AppResponse generateAppResponse(int orderId, int machineId) {
         System.out.println("[System] Generating response for customer...");
-        switch (conResponse.getErrCode()) {
+        Order order = getOrderById(orderId);
+        ControllerResponse cr = order.getCR();
+        CoffeeMachineController2 cm = findCoffeeMachineById(machineId);
+        if (cm == null) {
+            return new AppResponse(orderId);
+        }
+        AppResponse ar = null;
+        switch (cr.getErrCode()) {
             case -1:
-                this.appResponse = new AppResponse(order.getOrderId(), conResponse.getStatus(), orderedCoffeeMachine.getId());
+                ar = new AppResponse(orderId, cr.getStatus(), cm.getId());
                 break;
             case 2:
             case 26:
-                this.appResponse = new AppResponse(order.getOrderId(), conResponse.getStatus(), orderedCoffeeMachine.getId(), conResponse.getErrDesc());
+                ar = new AppResponse(orderId, cr.getStatus(), cm.getId(), cr.getErrDesc());
                 break;
             default:
+                ar = new AppResponse(orderId);
                 break;
         }
-        System.out.println("[System] Replying to customer with status: " + this.appResponse.getStatusMsg());
+        System.out.println("[System] Replying to customer with status: " + ar.getStatusMsg());
+        return ar;
     }
 
-    public AppResponse getAppResponse() {
-        return this.appResponse;
-    }
-
-    public CoffeeMachineController getOrderedCoffeeMachine() {
-        return orderedCoffeeMachine;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public ArrayList<CoffeeMachineController> getCoffeeMachineControllerDB() {
-        return coffeeMachineControllerDB;
-    }
     public ArrayList<String> getCoffeeTypes() {
         return coffeeTypes;
     }
 
-    public ControllerResponse getConResponse() {
-        return conResponse;
+    public ArrayList<CoffeeMachineController2> getCoffeeMachineControllerDB() {
+        return coffeeMachineControllerDB;
+    }
+
+    public Order getOrderById(int orderId) {
+        for (Order order : orders) {
+            if (order.getOrderId() == orderId) {
+                return order;
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<Order> getOrders() {
+        return orders;
+    }
+
+    public ArrayList<String> getCoffeeCondiments() {
+        return coffeeCondiments;
     }
 }

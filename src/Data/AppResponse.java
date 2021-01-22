@@ -29,7 +29,6 @@ public class AppResponse extends Response{
         this.errMsg = "Coffee Machine Not Found";
     }
 
-
     public int getMachineId() {
         return machineId;
     }
