@@ -1,4 +1,4 @@
-package Model;
+package Data;
 
 public abstract class Response {
 

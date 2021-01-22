@@ -1,9 +1,10 @@
-package Model;
+package Data;
 
 import java.util.ArrayList;
 
 public class OrderManager {
     private CoffeeMachineController orderedCoffeeMachine;
+    private ArrayList<Order> orders;
     private Order order;
     private final ArrayList<CoffeeMachineController> coffeeMachineControllerDB;
     private AppResponse appResponse;
@@ -32,14 +33,14 @@ public class OrderManager {
     }
 
     public void startOrder(Order order, int machineId) {
-        this.order = order;
+        this.orders.add(order);
         findCoffeeMachine(machineId);
 
         if (this.orderedCoffeeMachine == null) {
             this.conResponse = null;
             this.appResponse = new AppResponse(order.getOrderId());
         } else {
-            getControllerResponse();
+            //getControllerResponse();
             generateAppResponse();
         }
     }
@@ -53,7 +54,7 @@ public class OrderManager {
         }
     }
 
-    private void getControllerResponse() {
+    private void getControllerResponse(int orderID) {
         System.out.println("[System] Sending Order to coffee machine controller no." + orderedCoffeeMachine.getId());
         int status = orderedCoffeeMachine.getStatus();
         if (status == 0) {

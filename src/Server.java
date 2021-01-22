@@ -1,4 +1,4 @@
-import Model.*;
+import Data.*;
 
 import java.util.Scanner;
 

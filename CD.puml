@@ -1,5 +1,5 @@
 @startuml
-class Model.OrderManager {
+class Data.OrderManager {
 - CoffeeMachineController orderedCoffeeMachine
 - Order order
 - ArrayList<CoffeeMachineController> coffeeMachineControllerDB
@@ -17,7 +17,7 @@ class Model.OrderManager {
 + ArrayList<String> getCoffeeTypes()
 + ControllerResponse getConResponse()
 }
-class Model.Address {
+class Data.Address {
 - String street
 - String zip
 + String getStreet()
@@ -28,7 +28,7 @@ class Model.Address {
 }
 class ServerObservableState {
 }
-class Model.Order {
+class Data.Order {
 - int orderId
 - String drink
 - Address address
@@ -39,7 +39,7 @@ class Model.Order {
 + int getOrderId()
 + void setOrderId(int)
 }
-abstract class Model.Response {
+abstract class Data.Response {
 - int orderId
 - int status
 + int getOrderId()
@@ -47,7 +47,7 @@ abstract class Model.Response {
 + int getStatus()
 + void setStatus(int)
 }
-class Model.Condiment {
+class Data.Condiment {
 - int condimentId
 - String name
 + void setCondimentId(int)
@@ -60,7 +60,7 @@ class Server {
 - {static} OrderManager orderManager
 + void run()
 }
-class Model.CoffeeMachineController {
+class Data.CoffeeMachineController {
 - int id
 - Address address
 - CoffeeMachineType type
@@ -78,7 +78,7 @@ class Model.CoffeeMachineController {
 + void setType(String)
 + int getErrorType()
 }
-class Model.ControllerResponse {
+class Data.ControllerResponse {
 - String errDesc
 - int errCode
 + String getErrDesc()
@@ -86,7 +86,7 @@ class Model.ControllerResponse {
 + int getErrCode()
 + void setErrCode(int)
 }
-class Model.AppResponse {
+class Data.AppResponse {
 - int machineId
 - String statusMsg
 - String errMsg
@@ -106,6 +106,6 @@ class Main {
 }
 
 
-Model.Response <|-- Model.ControllerResponse
-Model.Response <|-- Model.AppResponse
+Data.Response <|-- Data.ControllerResponse
+Data.Response <|-- Data.AppResponse
 @enduml

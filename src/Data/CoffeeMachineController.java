@@ -1,6 +1,4 @@
-package Model;
-
-import Model.Address;
+package Data;
 
 import java.util.Random;
 
@@ -9,7 +7,7 @@ public class CoffeeMachineController {
     private Address address;
     private CoffeeMachineType type;
     private CoffeeMachineStatus status;
-    private int lastestOrderID;
+
 
     public CoffeeMachineController(int id, String type, int status, Address address) {
         this.address = address;
@@ -25,7 +23,6 @@ public class CoffeeMachineController {
                 ", address=" + address +
                 ", type=" + type +
                 ", status=" + status +
-                ", lastestOrderID=" + lastestOrderID +
                 '}';
     }
 
