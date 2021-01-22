@@ -1,89 +1,4 @@
 @startuml
-class Domain.OrderManager {
-- CoffeeMachineController orderedCoffeeMachine
-- Order order
-- ArrayList<CoffeeMachineController> coffeeMachineControllerDB
-- AppResponse appResponse
-- ControllerResponse conResponse
-- ArrayList<String> coffeeTypes
-+ void startOrder(Order,int)
-- void findCoffeeMachine(int)
-- void getControllerResponse()
-- void generateAppResponse()
-+ AppResponse getAppResponse()
-+ CoffeeMachineController getOrderedCoffeeMachine()
-+ Order getOrder()
-+ ArrayList<CoffeeMachineController> getCoffeeMachineControllerDB()
-+ ArrayList<String> getCoffeeTypes()
-+ ControllerResponse getConResponse()
-}
-class Data.Address {
-- String street
-- String zip
-+ String getStreet()
-+ void setStreet(String)
-+ String getZip()
-+ void setZip(String)
-+ String toString()
-}
-class Domain.Order {
-- int orderId
-- String drink
-- Address address
-+ String getDrink()
-+ void setDrink(String)
-+ Address getAddress()
-+ void setAddress(Address)
-+ int getOrderId()
-+ void setOrderId(int)
-}
-abstract class Data.Responses.Response {
-- int orderId
-- int status
-+ int getOrderId()
-+ void setOrderId(int)
-+ int getStatus()
-+ void setStatus(int)
-}
-class Data.Condiment {
-- int condimentId
-- String name
-+ void setCondimentId(int)
-+ void setName(String)
-+ int getCondimentId()
-+ String getName()
-}
-class Server.Server {
-- boolean isServerOn
-- {static} OrderManager orderManager
-+ void run()
-}
-class Domain.CoffeeMachineController {
-- int id
-- Address address
-- CoffeeMachineType type
-- CoffeeMachineStatus status
-- int lastestOrderID
-+ String toString()
-+ void setType(CoffeeMachineType)
-+ int getStatus()
-+ void setStatus(int)
-+ Address getAddress()
-+ void setAddress(Address)
-+ int getId()
-+ void setId(int)
-+ String getType()
-+ void setType(String)
-+ int getErrorType()
-}
-class Data.Responses.ControllerResponse {
-- String errDesc
-- int errCode
-+ String getErrDesc()
-+ void setErrDesc(String)
-+ int getErrCode()
-+ void setErrCode(int)
-}
 class Data.Responses.AppResponse {
 - int machineId
 - String statusMsg
@@ -99,11 +14,141 @@ class Data.Responses.AppResponse {
 + {static} String getCANCELLED()
 + {static} String getPREPARED()
 }
-class Main {
-+ {static} void main(String[])
+abstract class Domain.CoffeeMachineController {
+~ OrderCondimentBehavior ocb
+~ OrderDrinkBehavior odb
+~ int id
+~ String type
+~ int status
+~ Address address
+~ ArrayList<Order> observers
+~ ArrayList<String> condiments
+~ {abstract}void produceDrink(String)
+~ {abstract}void addCondiments(String[])
+~ void registerObserver(Order)
+~ void removeObserver(Order)
+~ void notifyObserver()
++ int getErrorType()
++ OrderCondimentBehavior getOcb()
++ void setOcb(OrderCondimentBehavior)
++ OrderDrinkBehavior getOdb()
++ void setOdb(OrderDrinkBehavior)
++ int getId()
++ void setId(int)
++ String getType()
++ void setType(String)
++ int getStatus()
++ void setStatus(int)
++ Address getAddress()
++ void setAddress(Address)
++ ArrayList<Order> getObservers()
++ void setObservers(ArrayList<Order>)
++ ArrayList<String> getCondiments()
++ void setCondiments(ArrayList<String>)
+}
+abstract class Data.Responses.Response {
+- int orderId
+- int status
++ int getOrderId()
++ void setOrderId(int)
++ int getStatus()
++ void setStatus(int)
+}
+class Server.Server {
+- boolean isServerOn
+- {static} OrderManager orderManager
++ void run()
+}
+interface Domain.Behaviors.OrderDrinkBehavior {
+~ void produceDrink(String)
+}
+class Domain.Behaviors.OrderDrink {
++ void produceDrink(String)
+}
+class Domain.Behaviors.AddNoCondiment {
++ void addCondiments(String[])
+}
+class Data.Condiment {
+- int condimentId
+- String name
++ void setCondimentId(int)
++ void setName(String)
++ int getCondimentId()
++ String getName()
+}
+class Domain.SimpleCoffeeMachineController {
+~ void produceDrink(String)
+~ void addCondiments(String[])
+}
+interface Domain.Behaviors.OrderCondimentBehavior {
+~ void addCondiments(String[])
+}
+class Domain.Order {
+- int orderId
+- String drink
+- Address address
+- CoffeeMachineController cm
+- ControllerResponse cr
+- String[] condiments
++ void update(CoffeeMachineController)
+- void generateCR()
++ ControllerResponse getCR()
++ String getDrink()
++ void setDrink(String)
++ Address getAddress()
++ void setAddress(Address)
++ int getOrderId()
++ void setOrderId(int)
+}
+class Data.Responses.ControllerResponse {
+- String errDesc
+- int errCode
++ String getErrDesc()
++ void setErrDesc(String)
++ int getErrCode()
++ void setErrCode(int)
+}
+class Domain.AdvancedCoffeeMachineController {
+~ void produceDrink(String)
+~ void addCondiments(String[])
+}
+interface Domain.Observer {
+~ void update(CoffeeMachineController)
+}
+class Data.Address {
+- String street
+- String zip
++ String getStreet()
++ void setStreet(String)
++ String getZip()
++ void setZip(String)
++ String toString()
+}
+class Domain.Behaviors.AddCondiment {
++ void addCondiments(String[])
+}
+class Domain.OrderManager {
+- ArrayList<Order> orders
+- ArrayList<CoffeeMachineController> coffeeMachineControllerDB
+- ArrayList<String> coffeeTypes
+- ArrayList<String> coffeeCondiments
++ AppResponse processOrder(int,String,Address,int,String[])
+- CoffeeMachineController findCoffeeMachineById(int)
+- AppResponse generateAppResponse(int,int)
++ ArrayList<String> getCoffeeTypes()
++ ArrayList<CoffeeMachineController> getCoffeeMachineControllerDB()
++ Order getOrderById(int)
++ ArrayList<Order> getOrders()
++ ArrayList<String> getCoffeeCondiments()
 }
 
 
-Data.Responses.Response <|-- Data.Responses.ControllerResponse
 Data.Responses.Response <|-- Data.Responses.AppResponse
+Domain.Behaviors.OrderDrinkBehavior <|.. Domain.Behaviors.OrderDrink
+Domain.Behaviors.OrderCondimentBehavior <|.. Domain.Behaviors.AddNoCondiment
+Domain.CoffeeMachineController <|-- Domain.SimpleCoffeeMachineController
+Domain.Observer <|.. Domain.Order
+Data.Responses.Response <|-- Data.Responses.ControllerResponse
+Domain.CoffeeMachineController <|-- Domain.AdvancedCoffeeMachineController
+Domain.Behaviors.OrderCondimentBehavior <|.. Domain.Behaviors.AddCondiment
 @enduml
