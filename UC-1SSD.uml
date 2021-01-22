@@ -1,0 +1,39 @@
+@startuml
+
+actor Customer
+Customer -> Server : run()
+activate Server
+Server -> Customer : request command
+Customer -> Server : select neworder
+Server --> OrderManager : getCoffeeMachineControllerDB()
+loop get CM status
+activate OrderManager
+OrderManager --> Server : return CoffeeMachineControllerDB
+loop get CM info
+Server -> CoffeeMachineController : getId, type, address
+activate CoffeeMachineController 
+CoffeeMachineController --> Server : return Id, type, address
+deactivate CoffeeMachineController
+end loop
+Server -> Customer : request CM selection
+Customer -> Server : select CM
+alt CM not found
+Server --> Customer : "coffeemachine not found"
+end alt
+Server -> Customer : request type selection 
+Customer -> Server : select drink type
+alt type not found
+Server --> Customer : "drink type not found"
+end alt
+Server --> Order : new Order(counter, input, addr)
+activate Order
+Server --> Customer : order generated & sent
+Server -> OrderManager : orderManager.startOrder(order, orderInputMachineNumber)
+OrderManager -> Order : startOrder(order, orderInputMachineNumber)
+deactivate Order
+OrderManager --> AppResponse : getAppResponse()
+activate AppResponse
+AppResponse --> Server : return response
+deactivate AppResponse
+Server --> Customer : display response
+@enduml
