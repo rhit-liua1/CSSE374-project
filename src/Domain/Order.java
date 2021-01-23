@@ -17,6 +17,7 @@ public class Order implements Observer{
         this.drink = drink;
         this.address = address;
         this.cm = cm;
+        cm.registerObserver(this);
         this.condiments = condiments;
 //        generateCR();
         this.cr = cm.generateCR(this);

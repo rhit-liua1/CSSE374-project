@@ -25,7 +25,6 @@ public abstract class CoffeeMachineController implements Subject{
     }
 
     public ControllerResponse generateCR(Order order) {
-        this.registerObserver(order);
         System.out.println("[System] Sending Order to coffee machine controller no." + this.getId());
         int status = this.getStatus();
         this.addCondiments(order.getCondiments());
