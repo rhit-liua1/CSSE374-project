@@ -1,13 +1,14 @@
 package Domain;
 
 import Data.Address;
+import Data.Responses.ControllerResponse;
 import Domain.Behaviors.OrderCondimentBehavior;
 import Domain.Behaviors.OrderDrinkBehavior;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public abstract class CoffeeMachineController {
+public abstract class CoffeeMachineController implements Subject{
     OrderCondimentBehavior ocb;
     OrderDrinkBehavior odb;
     int id;
@@ -23,20 +24,35 @@ public abstract class CoffeeMachineController {
         this.address = address;
     }
 
+    public ControllerResponse generateCR(Order order) {
+        this.registerObserver(order);
+        System.out.println("[System] Sending Order to coffee machine controller no." + this.getId());
+        int status = this.getStatus();
+        this.addCondiments(order.getCondiments());
+        if (status == 0) {
+            System.out.println("[System] Controller Response received. Coffee machine status=" + status);
+            this.produceDrink(order.getDrink());
+            return new ControllerResponse(order.getOrderId(), status);
+        } else {
+            System.out.println("[System] Controller Response received. Coffee machine status=" + status + ", Error=" + this.getErrorType());
+            return new ControllerResponse(order.getOrderId(), status, this.getErrorType());
+        }
+    }
+
     ArrayList<String> condiments = new ArrayList<>();
 
     abstract void produceDrink(String drink);
     abstract void addCondiments(String[] condiments);
 
-    void registerObserver(Order o) {
+    public void registerObserver(Order o) {
         this.observers.add(o);
-    };
+    }
 
-    void removeObserver(Order o) {
+    public void removeObserver(Order o) {
         this.observers.remove(o);
-    };
+    }
 
-    void notifyObserver() {
+    public void notifyObserver() {
         for (Order order : observers) {
             order.update(this);
         }
