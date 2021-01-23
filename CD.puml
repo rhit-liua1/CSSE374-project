@@ -151,4 +151,12 @@ Domain.Observer <|.. Domain.Order
 Data.Responses.Response <|-- Data.Responses.ControllerResponse
 Domain.CoffeeMachineController <|-- Domain.AdvancedCoffeeMachineController
 Domain.Behaviors.OrderCondimentBehavior <|.. Domain.Behaviors.AddCondiment
+
+Domain.OrderManager --> Domain.Order
+Domain.OrderManager --> Domain.CoffeeMachineController
+Server.Server --> Domain.OrderManager
+Data.Responses.Response --> Domain.OrderManager
+Domain.Order --> Data.Address
+Domain.Order --> Domain.Behaviors.OrderDrinkBehavior
+Domain.Order --> Domain.Behaviors.OrderCondimentBehavior
 @enduml
