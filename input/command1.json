@@ -1,0 +1,19 @@
+{
+  "command": {
+    "controller_id": 2,
+    "coffee_machine_id": 1,
+    "orderID": 1,
+    "DrinkName": "Americano",
+    "Requesttype": "Automated",
+    "Options:": [
+      {
+        "Name": "Cream",
+        "qty": 2
+      },
+      {
+        "Name": "Sugar",
+        "qty": 1
+      }
+    ]
+  }
+}
