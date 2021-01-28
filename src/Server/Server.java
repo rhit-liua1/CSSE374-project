@@ -97,7 +97,7 @@ public class Server {
 						}
 					}
 					if (flag)
-						break;
+						continue;
 				}
 //				System.out.println(order.toJson(condiments));
 				order.put("condiments", condiments);
