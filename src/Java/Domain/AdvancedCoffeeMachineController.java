@@ -10,17 +10,16 @@ public class AdvancedCoffeeMachineController extends CoffeeMachineController {
         super(id, type, status, address);
         this.ocb = new AddCondiment();
         this.odb = new OrderDrink();
-
     }
 
-    @Override
-    void produceDrink(String drink) {
-        this.odb.produceDrink(drink);
-    }
-
-    @Override
-    void addCondiments(String[] condiments) {
-        this.ocb.addCondiments(condiments);
-    }
+//    @Override
+//    public void produceDrink(String drink) {
+//        this.odb.produceDrink(drink);
+//    }
+//
+//    @Override
+//    public void addCondiments(String[] condiments) {
+//        this.ocb.addCondiments(condiments);
+//    }
 
 }

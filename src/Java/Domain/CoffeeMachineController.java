@@ -2,6 +2,7 @@ package Java.Domain;
 
 import Java.Data.CommandStream;
 import Java.Beans.CommandBean;
+import Java.Data.Condiment;
 import Java.Data.Responses.DrinkResponse;
 import Java.Beans.DrinkResponseBean;
 import Java.Data.Address;
@@ -10,6 +11,7 @@ import Java.Domain.Behaviors.OrderDrinkBehavior;
 import Java.GsonUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public abstract class CoffeeMachineController {
@@ -56,16 +58,7 @@ public abstract class CoffeeMachineController {
             int errCode = this.getErrorType();
             System.out.println("[CoffeeMachine] Coffee machine status = " + status + ", Error = " + errCode);
             dr.setErrorcode(errCode);
-            switch (errCode) {
-                case 2:
-                    dr.setErrordesc("Out of milk, drink canceled");
-                    break;
-                case 26:
-                    dr.setErrordesc("Machine jammed");
-                    break;
-                default:
-                    break;
-            }
+            dr.setErrordesc(this.getErrorMsg(errCode));
         }
         db.setDrinkresponse(dr);
         String drJson = GsonUtil.serializeWithGson(db);
@@ -89,9 +82,23 @@ public abstract class CoffeeMachineController {
 
     ArrayList<String> condiments = new ArrayList<>();
 
-    abstract void produceDrink(String drink);
+    public void produceDrink(String drink) {
+        if (this.status == 1) {
+            int errCode = this.getErrorType();
+            System.out.println("[CoffeeMachine] Error. Cannot produce drink. errorCode = " + errCode + " errorMessage = " + this.getErrorMsg(errCode));
+            return;
+        }
+        this.odb.produceDrink(drink);
+    };
 
-    abstract void addCondiments(String[] condiments);
+    public void addCondiments(List<Condiment> condiments) {
+        if (this.status == 1) {
+//            int errCode = this.getErrorType();
+//            System.out.println("[CoffeeMachine] Error. Cannot add condiments. errorCode = " + errCode + " errorMessage = " + this.getErrorMsg(errCode));
+            return;
+        }
+        this.ocb.addCondiments(condiments);
+    };
 
     public void registerObserver(Order o) {
         this.observers.add(o);
@@ -107,9 +114,30 @@ public abstract class CoffeeMachineController {
         }
     }
 
+    @Override
+    public String toString() {
+        return "CoffeeMachineController{" +
+                "id=" + id +
+                ", type='" + type + '\'' +
+                ", status=" + status +
+                ", address=" + address +
+                '}';
+    }
+
     public int getErrorType() {
         Random r = new Random();
         return r.nextInt(26 - 2) > 12 ? 26 : 2;
+    }
+
+    public String getErrorMsg(int errCode) {
+        switch (errCode) {
+            case 2:
+                return "Out of milk, drink canceled";
+            case 26:
+                return "Machine jammed";
+            default:
+                return "";
+        }
     }
 
     public OrderCondimentBehavior getOcb() {
