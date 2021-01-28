@@ -1,9 +1,6 @@
 package Java;
 
-import Java.Beans.CommandBean;
-import Java.Beans.DrinkResponseBean;
 import Java.Beans.OrderBean;
-import Java.Beans.UserResponseBean;
 import Java.Server.Server;
 
 //import static sun.net.www.protocol.http.AuthCacheValue.Type.Server;
@@ -54,10 +51,12 @@ public class Main {
 //        System.out.println(db.toString());
 
 
-        String j1 = GsonUtil.deserializeWithGson(new OrderBean());
-        System.out.println(j1);
-
-        OrderBean ob = GsonUtil.parseJsonWithGson(j1, OrderBean.class);
-        System.out.println(ob.toString());
+//        String j1 = GsonUtil.serializeWithGson(new OrderBean());
+//        String j2 = "{\"orderID\":1,\"address\":{\"street\":\"18 Cana Ct.\",\"ZIP\":47804},\"drink\":\"latte\"}";
+//        System.out.println(j1);
+//        System.out.println(j2);
+//
+//        OrderBean ob = GsonUtil.parseJsonWithGson(j1, OrderBean.class);
+//        System.out.println(ob.toString());
     }
 }

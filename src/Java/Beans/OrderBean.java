@@ -10,7 +10,15 @@ public class OrderBean {
     Order order;
 
     public OrderBean() {
-        this.order = new Order(1,"Americano");
+        this.order = new Order();
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    public Order getOrder() {
+        return order;
     }
 
     @Override
@@ -27,8 +35,11 @@ public class OrderBean {
         List<Condiment> condiments = new ArrayList<>();
 
         public Order() {
-
+//            this.orderID = 1;
+//            this.address = new Address("wabsh",47803);
+//            this.drink = "latte";
         }
+
 
         public int getOrderID() {
             return orderID;
@@ -88,6 +99,22 @@ public class OrderBean {
                 this.ZIP = ZIP;
             }
 
+            public String getStreet() {
+                return street;
+            }
+
+            public void setStreet(String street) {
+                this.street = street;
+            }
+
+            public int getZIP() {
+                return ZIP;
+            }
+
+            public void setZIP(int ZIP) {
+                this.ZIP = ZIP;
+            }
+
             @Override
             public String toString() {
                 return "Address{" +
@@ -100,6 +127,22 @@ public class OrderBean {
         public static class Condiment {
             private String Name;
             private int qty;
+
+            public String getName() {
+                return Name;
+            }
+
+            public void setName(String name) {
+                Name = name;
+            }
+
+            public int getQty() {
+                return qty;
+            }
+
+            public void setQty(int qty) {
+                this.qty = qty;
+            }
 
             public Condiment(String name, int qty) {
                 Name = name;

@@ -8,11 +8,19 @@ public class CommandBean{
 
     private Command command;
 
+    public CommandBean() {
+        this.command = new Command();
+    }
+
     @Override
     public String toString() {
         return "CommandBean{" +
                 "command=" + command +
                 '}';
+    }
+
+    public Command getCommand() {
+        return command;
     }
 
     public static class Command implements Serializable {
@@ -35,16 +43,18 @@ public class CommandBean{
                     '}';
         }
 
+        public Command() {}
+
         public Command(int controller_id, int coffee_machine_id, int orderID, String drinkName, String Requesttype) {
             this.controller_id = controller_id;
             this.coffee_machine_id = coffee_machine_id;
             this.orderID = orderID;
             this.DrinkName = drinkName;
             this.Requesttype = Requesttype;
-            this.Options.add(new Option("Cream", 2));
+//            this.Options.add(new Option("Cream", 2));
         }
 
-        public class Option {
+        public static class Option {
             private String Name;
             private int qty;
 

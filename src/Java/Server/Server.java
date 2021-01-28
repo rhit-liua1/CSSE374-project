@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import Java.GsonUtil;
-import com.google.gson.Gson;
 import org.json.JSONObject;
 
 
@@ -47,7 +46,7 @@ public class Server {
 				System.out.println("[Server] Command received: neworder");
 				StringBuilder sb = new StringBuilder();
 
-				JSONObject order = new JSONObject();
+//				JSONObject order = new JSONObject();
 
 				OrderBean ob = new OrderBean();
 				OrderBean.Order inputOrder = new OrderBean.Order();
@@ -149,8 +148,17 @@ public class Server {
 				inputOrder.setAddress(ad);
 				//set orderID to current order (for json use)
 				inputOrder.setOrderID(globalOrderCounter++);
-				System.out.println("input order: "+inputOrder.toString());
-				System.out.println("input json: "+GsonUtil.deserializeWithGson(inputOrder));
+//				System.out.println("input order: "+inputOrder.toString());
+//				System.out.println("input json: "+GsonUtil.serializeWithGson(inputOrder));
+
+				System.out.println("input order:" +inputOrder);
+				ob.setOrder(inputOrder);
+				System.out.println("order b:" +ob.toString());
+				String orderJson = GsonUtil.serializeWithGson(ob);
+				System.out.println("order json: "+orderJson);
+				String arJson = orderManager.processOrderWithJson(orderJson);
+				UserResponseBean ub = GsonUtil.parseJsonWithGson(arJson,UserResponseBean.class);
+				UserResponseBean.UserResponse ur = ub.getUser_response();
 
 //				order.put("orderID", globalOrderCounter++);
 				System.out.println("[Client] Order generated");
@@ -159,42 +167,43 @@ public class Server {
 //				AppResponse ar = orderManager.processOrder(globalOrderCounter++, orderInputDrink, address,
 //						orderInputMachineNumber, condiments);
 
-				if (flag) {
-					order.put("condiments", condiments);
-					order.put("address", address);
-					AppResponse ar1 = orderManager.processOrder1(order);
-					System.out.println();
-					System.out.println("[Client] Received response from the system: ");
-					System.out.println("--------------------------------------------------");
-					System.out.println("> Order ID: " + ar1.getOrderId());
-					System.out.println("> Machine ID: " + ar1.getMachineId());
-					if (ar1.getStatus() == 1) {
-						System.out.println("> Order Status: " + ar1.getStatusMsg());
-						System.out.println("> Error: " + ar1.getErrMsg());
-					} else {
-						System.out.println("> Order Status: " + ar1.getStatusMsg());
-					}
-					System.out.println("--------------------------------------------------");
-					System.out.println();
-					System.out.println();
-				}
-
 				System.out.println();
 				System.out.println("[Client] Received response from the system: ");
 				System.out.println("--------------------------------------------------");
-//				System.out.println("> Order ID: " + ar1.getOrderId());
-//				System.out.println("> Machine ID: " + ar1.getMachineId());
-//				if (ar1.getStatus() == 1) {
-//					System.out.println("> Order Status: " + ar1.getStatusMsg());
-//					System.out.println("> Error: " + ar1.getErrMsg());
-//				} else {
-//					System.out.println("> Order Status: " + ar1.getStatusMsg());
-//				}
+				System.out.println("> Order ID: " + ur.getOrderID());
+				System.out.println("> Machine ID: " + ur.getCoffee_machine_id());
+				if (ur.getStatus() == 1) {
+					System.out.println("> Order Status: " + ur.getStatus_message());
+					System.out.println("> Error: " + ur.getError_message());
+				} else {
+					System.out.println("> Order Status: " + ur.getStatus_message());
+				}
 				System.out.println("--------------------------------------------------");
 				System.out.println();
 				System.out.println();
+
+//				if (flag) {
+//					order.put("condiments", condiments);
+//					order.put("address", address);
+//					AppResponse ar1 = orderManager.processOrder1(order);
+//					System.out.println();
+//					System.out.println("[Client] Received response from the system: ");
+//					System.out.println("--------------------------------------------------");
+//					System.out.println("> Order ID: " + ar1.getOrderId());
+//					System.out.println("> Machine ID: " + ar1.getMachineId());
+//					if (ar1.getStatus() == 1) {
+//						System.out.println("> Order Status: " + ar1.getStatusMsg());
+//						System.out.println("> Error: " + ar1.getErrMsg());
+//					} else {
+//						System.out.println("> Order Status: " + ar1.getStatusMsg());
+//					}
+//					System.out.println("--------------------------------------------------");
+//					System.out.println();
+//					System.out.println();
+//				}
+
 				break;
-			default:
+				default:
 				System.out.println("[Server] Command not recognized.");
 				break;
 			}

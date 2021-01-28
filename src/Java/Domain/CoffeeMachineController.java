@@ -1,131 +1,173 @@
 package Java.Domain;
 
+import Java.Beans.CommandBean;
+import Java.Beans.DrinkResponseBean;
 import Java.Data.Address;
 import Java.Data.Responses.ControllerResponse;
 import Java.Domain.Behaviors.OrderCondimentBehavior;
 import Java.Domain.Behaviors.OrderDrinkBehavior;
+import Java.GsonUtil;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public abstract class CoffeeMachineController {
-	OrderCondimentBehavior ocb;
-	OrderDrinkBehavior odb;
-	int id;
-	String type;
-	int status;
-	Address address;
-	ArrayList<Order> observers = new ArrayList<>();
+    protected OrderCondimentBehavior ocb;
+    protected OrderDrinkBehavior odb;
+    protected int id;
+    protected String type;
+    protected int status;
+    protected Address address;
+    protected ArrayList<Order> observers = new ArrayList<>();
 
-	public CoffeeMachineController(int id, String type, int status, Address address) {
-		this.id = id;
-		this.type = type;
-		this.status = status;
-		this.address = address;
-	}
+    public CoffeeMachineController(int id, String type, int status, Address address) {
+        this.id = id;
+        this.type = type;
+        this.status = status;
+        this.address = address;
+    }
 
-	public ControllerResponse generateCR(Order order) {
-		System.out.println("[System] Sending Order to coffee machine controller no." + this.getId());
-		int status = this.getStatus();
-		this.addCondiments(order.getCondiments());
-		if (status == 0) {
-			System.out.println("[System] Controller Response received. Coffee machine status=" + status);
-			this.produceDrink(order.getDrink());
-			return new ControllerResponse(order.getOrderId(), status);
-		} else {
-			System.out.println("[System] Controller Response received. Coffee machine status=" + status + ", Error="
-					+ this.getErrorType());
-			return new ControllerResponse(order.getOrderId(), status, this.getErrorType());
-		}
-	}
+    public String processCommandStream(String json) {
+        try {
+        	//command json obj
+			CommandBean cb = GsonUtil.parseJsonWithGson(json, CommandBean.class);
+			CommandBean.Command cmd = cb.getCommand();
+			//drink response bean
+			DrinkResponseBean db = new DrinkResponseBean();
+			DrinkResponseBean.DrinkResponse dr = db.getDrinkresponse();
+			dr.setOrderID(cmd.getOrderID());
+			dr.setStatus(this.status);
+			if (status == 0) {
+				System.out.println("[System] Controller Response received. Coffee machine status=" + status);
+				dr.setErrorcode(0);
+				dr.setErrordesc("");
+			} else {
+				int errCode = this.getErrorType();
+				System.out.println("[System] Controller Response received. Coffee machine status=" + status + ", Error="
+						+ errCode);
+				dr.setErrorcode(errCode);
+				switch (errCode) {
+					case 2:
+						dr.setErrordesc("Out of milk, drink canceled");
+						break;
+					case 26:
+						dr.setErrordesc("Machine jammed");
+						break;
+					default:
+						break;
+				}
+			}
+			String drJson = GsonUtil.serializeWithGson(db);
+			System.out.println("controller response"+drJson);
+			return drJson;
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+        return "";
+    }
 
-	ArrayList<String> condiments = new ArrayList<>();
+    public ControllerResponse generateCR(Order order) {
+        System.out.println("[System] Sending Order to coffee machine controller no." + this.getId());
+        int status = this.getStatus();
+        this.addCondiments(order.getCondiments());
+        if (status == 0) {
+            System.out.println("[System] Controller Response received. Coffee machine status=" + status);
+            this.produceDrink(order.getDrink());
+            return new ControllerResponse(order.getOrderId(), status);
+        } else {
+            System.out.println("[System] Controller Response received. Coffee machine status=" + status + ", Error="
+                    + this.getErrorType());
+            return new ControllerResponse(order.getOrderId(), status, this.getErrorType());
+        }
+    }
 
-	abstract void produceDrink(String drink);
+    ArrayList<String> condiments = new ArrayList<>();
 
-	abstract void addCondiments(String[] condiments);
+    abstract void produceDrink(String drink);
 
-	public void registerObserver(Order o) {
-		this.observers.add(o);
-	}
+    abstract void addCondiments(String[] condiments);
 
-	public void removeObserver(Order o) {
-		this.observers.remove(o);
-	}
+    public void registerObserver(Order o) {
+        this.observers.add(o);
+    }
 
-	public void notifyObserver() {
-		for (Order order : observers) {
-			order.update(this);
-		}
-	}
+    public void removeObserver(Order o) {
+        this.observers.remove(o);
+    }
 
-	public int getErrorType() {
-		Random r = new Random();
-		return r.nextInt(26 - 2) > 12 ? 26 : 2;
-	}
+    public void notifyObserver() {
+        for (Order order : observers) {
+            order.update(this);
+        }
+    }
 
-	public OrderCondimentBehavior getOcb() {
-		return ocb;
-	}
+    public int getErrorType() {
+        Random r = new Random();
+        return r.nextInt(26 - 2) > 12 ? 26 : 2;
+    }
 
-	public void setOcb(OrderCondimentBehavior ocb) {
-		this.ocb = ocb;
-	}
+    public OrderCondimentBehavior getOcb() {
+        return ocb;
+    }
 
-	public OrderDrinkBehavior getOdb() {
-		return odb;
-	}
+    public void setOcb(OrderCondimentBehavior ocb) {
+        this.ocb = ocb;
+    }
 
-	public void setOdb(OrderDrinkBehavior odb) {
-		this.odb = odb;
-	}
+    public OrderDrinkBehavior getOdb() {
+        return odb;
+    }
 
-	public int getId() {
-		return id;
-	}
+    public void setOdb(OrderDrinkBehavior odb) {
+        this.odb = odb;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public int getStatus() {
-		return status;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setStatus(int status) {
-		this.status = status;
-	}
+    public int getStatus() {
+        return status;
+    }
 
-	public Address getAddress() {
-		return address;
-	}
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
-	public void setAddress(Address address) {
-		this.address = address;
-	}
+    public Address getAddress() {
+        return address;
+    }
 
-	public ArrayList<Order> getObservers() {
-		return observers;
-	}
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
-	public void setObservers(ArrayList<Order> observers) {
-		this.observers = observers;
-	}
+    public ArrayList<Order> getObservers() {
+        return observers;
+    }
 
-	public ArrayList<String> getCondiments() {
-		return condiments;
-	}
+    public void setObservers(ArrayList<Order> observers) {
+        this.observers = observers;
+    }
 
-	public void setCondiments(ArrayList<String> condiments) {
-		this.condiments = condiments;
-	}
+    public ArrayList<String> getCondiments() {
+        return condiments;
+    }
+
+    public void setCondiments(ArrayList<String> condiments) {
+        this.condiments = condiments;
+    }
 
 }

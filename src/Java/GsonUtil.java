@@ -8,7 +8,7 @@ import java.util.List;
 public class GsonUtil {
     final static Gson GSON = new Gson();
 
-    public static String deserializeWithGson(Object obj) {
+    public static String serializeWithGson(Object obj) {
         return GSON.toJson(obj);
     }
 

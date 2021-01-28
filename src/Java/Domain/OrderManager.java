@@ -1,16 +1,17 @@
 package Java.Domain;
 
+import Java.Beans.*;
+import Java.Beans.OrderBean;
 import Java.Data.*;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import Java.GsonUtil;
 
 import Java.Data.Responses.AppResponse;
 import Java.Data.Responses.ControllerResponse;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class OrderManager implements Subject {
@@ -30,12 +31,14 @@ public class OrderManager implements Subject {
 		Address addr2 = new Address("3 S. Walnut", "60601");
 		Address addr3 = new Address("875 Champlain Ct.", "47803");
 		Address addr4 = new Address("18 Cana Ct.", "47804");
-		this.coffeeMachineControllerDB.add(0, new SimpleCoffeeMachineController(0, "simple", 1, addr4));
-		this.coffeeMachineControllerDB.add(1, new SimpleCoffeeMachineController(1, "simple", 0, addr1));
-		this.coffeeMachineControllerDB.add(2, new AdvancedCoffeeMachineController(2, "advanced", 0, addr1));
-		this.coffeeMachineControllerDB.add(3, new AdvancedCoffeeMachineController(3, "advanced", 1, addr2));
-		this.coffeeMachineControllerDB.add(4, new SimpleCoffeeMachineController(4, "simple", 0, addr2));
-		this.coffeeMachineControllerDB.add(5, new AdvancedCoffeeMachineController(5, "advanced", 0, addr3));
+		Address addr5 = new Address("500 Pen Street", "00001");
+		Address addr6 = new Address("5500 Wabash Ave", "47803");
+		this.coffeeMachineControllerDB.add(0, new SimpleCoffeeMachineController(0, "simple", 1, addr1));
+		this.coffeeMachineControllerDB.add(1, new SimpleCoffeeMachineController(1, "simple", 0, addr2));
+		this.coffeeMachineControllerDB.add(2, new AdvancedCoffeeMachineController(2, "advanced", 0, addr3));
+		this.coffeeMachineControllerDB.add(3, new AdvancedCoffeeMachineController(3, "advanced", 1, addr4));
+		this.coffeeMachineControllerDB.add(4, new SimpleCoffeeMachineController(4, "simple", 0, addr5));
+		this.coffeeMachineControllerDB.add(5, new AdvancedCoffeeMachineController(5, "advanced", 0, addr6));
 		this.coffeeTypes.add("americano");
 		this.coffeeTypes.add("latte");
 		this.coffeeTypes.add("decaff");
@@ -45,6 +48,72 @@ public class OrderManager implements Subject {
 		this.coffeeCondiments.add("sugar");
 		this.coffeeCondiments.add("cream");
 		this.coffeeCondiments.add("nutrasweet");
+	}
+
+	public String processOrderWithJson(String json) {
+		try{
+			//order json obj
+			OrderBean ob = GsonUtil.parseJsonWithGson(json,OrderBean.class);
+			System.out.println("ob: "+ob.toString());
+			OrderBean.Order od = ob.getOrder();
+			System.out.println("od: "+od.toString());
+			//command json obj
+			CommandBean cb = new CommandBean();
+			CommandBean.Command cmd = cb.getCommand();
+			//find coffee machine controller
+			CoffeeMachineController cmc = findCoffeeMachineByAddress(od.getAddress());
+			cmd.setController_id(cmc.getId());
+			cmd.setCoffee_machine_id(cmc.getId());
+			cmd.setOrderID(od.getOrderID());
+			cmd.setDrinkName(od.getDrink());
+			cmd.setRequesttype(cmc.getType());
+			List<CommandBean.Command.Option> optList = cmd.getOptions();
+			for (OrderBean.Order.Condiment condiment : od.getCondiments()) {
+				CommandBean.Command.Option tmpOpt = new CommandBean.Command.Option(condiment.getName(),condiment.getQty());
+				optList.add(tmpOpt);
+			}
+
+			//deserialize cmd
+			String cmdJson = GsonUtil.serializeWithGson(cmd);
+			System.out.println("controller response: "+cmdJson);
+			//get controller response
+			String drJson = cmc.processCommandStream(cmdJson);;
+			//get drJson
+			DrinkResponseBean db = GsonUtil.parseJsonWithGson(drJson,DrinkResponseBean.class);
+			DrinkResponseBean.DrinkResponse dr = db.getDrinkresponse();
+			//new Userresponse
+			UserResponseBean ub = new UserResponseBean();
+			UserResponseBean.UserResponse ur = ub.getUser_response();
+			ur.setOrderID(dr.getOrderID());
+			ur.setCoffee_machine_id(cmc.getId());
+			ur.setStatus(dr.getStatus());
+			switch (dr.getStatus()) {
+				case 0:
+					ur.setStatus_message("Your coffee has been prepared with your desired options");
+					break;
+				case 1:
+					ur.setStatus_message("Your coffee order has been cancelled");
+					break;
+			}
+			ur.setError_message(dr.getErrordesc());
+			String urJson = GsonUtil.serializeWithGson(ub);
+			System.out.println("user response: "+urJson);
+			return urJson;
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}
+		return "";
+	}
+
+	private CoffeeMachineController findCoffeeMachineByAddress(OrderBean.Order.Address address) {
+		if (address == null) return null;
+		for (CoffeeMachineController cmc : coffeeMachineControllerDB) {
+			if (cmc.getAddress().getStreet().equals(address.getStreet())) {
+				return cmc;
+			}
+		}
+		System.out.println("[Client]> machine not found at address");
+		return null;
 	}
 
 	public AppResponse processOrder(int orderId, String drink, Address address, int machineId, String[] condiments) {
