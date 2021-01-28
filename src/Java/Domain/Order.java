@@ -1,7 +1,7 @@
 package Java.Domain;
 
 import Java.Data.Address;
-import Java.Data.Responses.ControllerResponse;
+import Java.Data.Responses.DrinkResponse;
 
 public class Order implements Observer{
 
@@ -9,7 +9,7 @@ public class Order implements Observer{
     private String drink;
     private Address address;
     private CoffeeMachineController cm;
-    private ControllerResponse cr;
+    private DrinkResponse dr;
     private String[] condiments;
 
     public Order(int orderId, String drink, Address address, CoffeeMachineController cm, String[] condiments) {
@@ -20,14 +20,13 @@ public class Order implements Observer{
         cm.registerObserver(this);
         this.condiments = condiments;
 //        generateCR();
-        this.cr = cm.generateCR(this);
+        //this.cr = cm.generateDR(this);
     }
 
     @Override
     public void update(CoffeeMachineController cm) {
         this.cm = cm;
-        cm.generateCR(this);
-//        generateCR();
+        //cm.generateDR(this);
     }
 
 
@@ -57,8 +56,8 @@ public class Order implements Observer{
         this.condiments = condiments;
     }
 
-    public ControllerResponse getCR() {
-        return this.cr;
+    public DrinkResponse getDrinkResponse() {
+        return this.dr;
     }
 
     public String getDrink() {

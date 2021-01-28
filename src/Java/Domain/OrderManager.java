@@ -1,13 +1,14 @@
 package Java.Domain;
 
-import Java.Beans.*;
+import Java.Beans.CommandBean;
 import Java.Beans.OrderBean;
 import Java.Data.*;
 
+import Java.Data.Responses.DrinkResponse;
+import Java.Beans.DrinkResponseBean;
+import Java.Data.Responses.UserResponse;
+import Java.Beans.UserResponseBean;
 import Java.GsonUtil;
-
-import Java.Data.Responses.AppResponse;
-import Java.Data.Responses.ControllerResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +28,12 @@ public class OrderManager implements Subject {
 		this.orders = new ArrayList<>();
 		this.coffeeTypes = new ArrayList<>();
 		this.coffeeCondiments = new ArrayList<>();
-		Address addr1 = new Address("200 N. Main", "47803");
-		Address addr2 = new Address("3 S. Walnut", "60601");
-		Address addr3 = new Address("875 Champlain Ct.", "47803");
-		Address addr4 = new Address("18 Cana Ct.", "47804");
-		Address addr5 = new Address("500 Pen Street", "00001");
-		Address addr6 = new Address("5500 Wabash Ave", "47803");
+		Address addr1 = new Address("200 N. Main", 47803);
+		Address addr2 = new Address("3 S. Walnut", 60601);
+		Address addr3 = new Address("875 Champlain Ct.", 47803);
+		Address addr4 = new Address("18 Cana Ct.", 47804);
+		Address addr5 = new Address("500 Pen Street", 00001);
+		Address addr6 = new Address("5500 Wabash Ave", 47803);
 		this.coffeeMachineControllerDB.add(0, new SimpleCoffeeMachineController(0, "simple", 1, addr1));
 		this.coffeeMachineControllerDB.add(1, new SimpleCoffeeMachineController(1, "simple", 0, addr2));
 		this.coffeeMachineControllerDB.add(2, new AdvancedCoffeeMachineController(2, "advanced", 0, addr3));
@@ -50,54 +51,39 @@ public class OrderManager implements Subject {
 		this.coffeeCondiments.add("nutrasweet");
 	}
 
-	public String processOrderWithJson(String json) {
+	public String processOrderWithJson(String orderInputJson) {
 		try{
-			//order json obj
-			OrderBean ob = GsonUtil.parseJsonWithGson(json,OrderBean.class);
-			System.out.println("ob: "+ob.toString());
-			OrderBean.Order od = ob.getOrder();
-			System.out.println("od: "+od.toString());
-			//command json obj
+			//receive a order-input json object
+			OrderBean ob = GsonUtil.parseJsonWithGson(orderInputJson,OrderBean.class);
+			Java.Data.Order od = ob.getOrder();
+
+			//create a command-stream json object
 			CommandBean cb = new CommandBean();
-			CommandBean.Command cmd = cb.getCommand();
-			//find coffee machine controller
+			CommandStream cmd = cb.getCommand();
+
+			//find the right coffee machine and create command stream
 			CoffeeMachineController cmc = findCoffeeMachineByAddress(od.getAddress());
 			cmd.setController_id(cmc.getId());
 			cmd.setCoffee_machine_id(cmc.getId());
 			cmd.setOrderID(od.getOrderID());
 			cmd.setDrinkName(od.getDrink());
 			cmd.setRequesttype(cmc.getType());
-			List<CommandBean.Command.Option> optList = cmd.getOptions();
-			for (OrderBean.Order.Condiment condiment : od.getCondiments()) {
-				CommandBean.Command.Option tmpOpt = new CommandBean.Command.Option(condiment.getName(),condiment.getQty());
+			List<Option> optList = cmd.getOptions();
+			for (Condiment condiment : od.getCondiments()) {
+				Option tmpOpt = new Option(condiment.getName(),condiment.getQty());
 				optList.add(tmpOpt);
 			}
 
-			//deserialize cmd
-			String cmdJson = GsonUtil.serializeWithGson(cmd);
-			System.out.println("controller response: "+cmdJson);
-			//get controller response
-			String drJson = cmc.processCommandStream(cmdJson);;
-			//get drJson
+			//send command-stream json object to coffee machine
+			cb.setCommand(cmd);
+			String cmdJson = GsonUtil.serializeWithGson(cb);
+			System.out.println("[System] Sending command-stream JSON object to coffee machine: \n"+cmdJson + "\n");
+			String drJson = cmc.processCommandStream(cmdJson);
+
+			//Receive Drink Response and Translate into User Response
 			DrinkResponseBean db = GsonUtil.parseJsonWithGson(drJson,DrinkResponseBean.class);
-			DrinkResponseBean.DrinkResponse dr = db.getDrinkresponse();
-			//new Userresponse
-			UserResponseBean ub = new UserResponseBean();
-			UserResponseBean.UserResponse ur = ub.getUser_response();
-			ur.setOrderID(dr.getOrderID());
-			ur.setCoffee_machine_id(cmc.getId());
-			ur.setStatus(dr.getStatus());
-			switch (dr.getStatus()) {
-				case 0:
-					ur.setStatus_message("Your coffee has been prepared with your desired options");
-					break;
-				case 1:
-					ur.setStatus_message("Your coffee order has been cancelled");
-					break;
-			}
-			ur.setError_message(dr.getErrordesc());
-			String urJson = GsonUtil.serializeWithGson(ub);
-			System.out.println("user response: "+urJson);
+			DrinkResponse dr = db.getDrinkResponse();
+			String urJson = generateUserResponseJson(dr, cmd.getCoffee_machine_id());
 			return urJson;
 		} catch (Exception e) {
 			System.out.println(e.toString());
@@ -105,7 +91,29 @@ public class OrderManager implements Subject {
 		return "";
 	}
 
-	private CoffeeMachineController findCoffeeMachineByAddress(OrderBean.Order.Address address) {
+	public String generateUserResponseJson(DrinkResponse dr, int machineID) {
+		//new user-response from drink-reponse
+		UserResponseBean ub = new UserResponseBean();
+		UserResponse ur = ub.getUser_response();
+		ur.setOrderID(dr.getOrderID());
+		ur.setCoffee_machine_id(machineID);
+		ur.setStatus(dr.getStatus());
+		switch (dr.getStatus()) {
+			case 0:
+				ur.setStatus_message("Your coffee has been prepared with your desired options");
+				break;
+			case 1:
+				ur.setStatus_message("Your coffee order has been cancelled");
+				break;
+		}
+		ur.setError_message(dr.getErrordesc());
+		ub.setUser_response(ur);
+		String urJson = GsonUtil.serializeWithGson(ub);
+		System.out.println("[System] Sending user-response JSON object to user: \n" + urJson + "\n");
+		return urJson;
+	}
+
+	private CoffeeMachineController findCoffeeMachineByAddress(Address address) {
 		if (address == null) return null;
 		for (CoffeeMachineController cmc : coffeeMachineControllerDB) {
 			if (cmc.getAddress().getStreet().equals(address.getStreet())) {
@@ -116,23 +124,23 @@ public class OrderManager implements Subject {
 		return null;
 	}
 
-	public AppResponse processOrder(int orderId, String drink, Address address, int machineId, String[] condiments) {
-		CoffeeMachineController cm = findCoffeeMachineById(machineId);
-		Order order = new Order(orderId, drink, address, cm, condiments);
-		this.orders.add(order);
-		return generateAppResponse(order.getOrderId(), machineId);
-	}
-
-	public AppResponse processOrder1(JSONObject order) {
-		Address addr = (Address) order.get("address");
-		System.out.println(addr.toString());
-		CoffeeMachineController cm = findCoffeeMachineByAddress(addr.toString());
-//		this.jorders.add(order);
-		return generateAppResponse(order.getInt("orderID"), cm.id);
-	}
+//	public AppResponse processOrder(int orderId, String drink, Address address, int machineId, String[] condiments) {
+//		CoffeeMachineController cm = findCoffeeMachineById(machineId);
+//		Order order = new Order(orderId, drink, address, cm, condiments);
+//		this.orders.add(order);
+//		return generateAppResponse(order.getOrderId(), machineId);
+//	}
+//
+//	public AppResponse processOrder1(JSONObject order) {
+//		Address addr = (Address) order.get("address");
+//		System.out.println(addr.toString());
+//		CoffeeMachineController cm = findCoffeeMachineByAddress(addr.toString());
+////		this.jorders.add(order);
+//		return generateAppResponse(order.getInt("orderID"), cm.id);
+//	}
 
 	// find coffee machine based on provided id
-	private CoffeeMachineController findCoffeeMachineById(int id) {
+	public CoffeeMachineController findCoffeeMachineById(int id) {
 		for (CoffeeMachineController cm : coffeeMachineControllerDB) {
 			if (cm.getId() == id) {
 				return cm;
@@ -141,39 +149,44 @@ public class OrderManager implements Subject {
 		return null;
 	}
 
-	private CoffeeMachineController findCoffeeMachineByAddress(String addr) {
-		for (CoffeeMachineController cm : coffeeMachineControllerDB) {
-			if (addr.equals(cm.getAddress().toString())) {
-				return cm;
-			}
-		}
-		return null;
+	public Address findAddressById(int id) {
+		return findCoffeeMachineById(id).getAddress();
 	}
 
-	private AppResponse generateAppResponse(int orderId, int machineId) {
-		System.out.println("[System] Generating response for customer...");
-		Order order = getOrderById(orderId);
-		ControllerResponse cr = order.getCR();
-		CoffeeMachineController cm = findCoffeeMachineById(machineId);
-		if (cm == null) {
-			return new AppResponse(orderId);
-		}
-		AppResponse ar = null;
-		switch (cr.getErrCode()) {
-		case -1:
-			ar = new AppResponse(orderId, cr.getStatus(), cm.getId());
-			break;
-		case 2:
-		case 26:
-			ar = new AppResponse(orderId, cr.getStatus(), cm.getId(), cr.getErrDesc());
-			break;
-		default:
-			ar = new AppResponse(orderId);
-			break;
-		}
-		System.out.println("[System] Replying to customer with status: " + ar.getStatusMsg());
-		return ar;
-	}
+
+//	private CoffeeMachineController findCoffeeMachineByAddress(String addr) {
+//		for (CoffeeMachineController cm : coffeeMachineControllerDB) {
+//			if (addr.equals(cm.getAddress().toString())) {
+//				return cm;
+//			}
+//		}
+//		return null;
+//	}
+
+//	private AppResponse generateAppResponse(int orderId, int machineId) {
+//		System.out.println("[System] Generating response for customer...");
+//		Order order = getOrderById(orderId);
+//		ControllerResponse cr = order.getCR();
+//		CoffeeMachineController cm = findCoffeeMachineById(machineId);
+//		if (cm == null) {
+//			return new AppResponse(orderId);
+//		}
+//		AppResponse ar = null;
+//		switch (cr.getErrCode()) {
+//		case -1:
+//			ar = new AppResponse(orderId, cr.getStatus(), cm.getId());
+//			break;
+//		case 2:
+//		case 26:
+//			ar = new AppResponse(orderId, cr.getStatus(), cm.getId(), cr.getErrDesc());
+//			break;
+//		default:
+//			ar = new AppResponse(orderId);
+//			break;
+//		}
+//		System.out.println("[System] Replying to customer with status: " + ar.getStatusMsg());
+//		return ar;
+//	}
 
 	public ArrayList<String> getCoffeeTypes() {
 		return coffeeTypes;
@@ -220,7 +233,7 @@ public class OrderManager implements Subject {
 
 	}
 
-	public AppResponse processOrder(JSONObject order) {
+	public UserResponse processOrder(JSONObject order) {
 		// TODO Auto-generated method stub
 		return null;
 	}

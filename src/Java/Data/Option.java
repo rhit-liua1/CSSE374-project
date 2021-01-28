@@ -1,8 +1,21 @@
 package Java.Data;
 
-public class Condiment {
+public class Option {
     private String Name;
     private int qty;
+
+    @Override
+    public String toString() {
+        return "Option{" +
+                "Name='" + Name + '\'' +
+                ", qty=" + qty +
+                '}';
+    }
+
+    public Option(String name, int qty) {
+        this.Name = name;
+        this.qty = qty;
+    }
 
     public String getName() {
         return Name;
@@ -18,18 +31,5 @@ public class Condiment {
 
     public void setQty(int qty) {
         this.qty = qty;
-    }
-
-    public Condiment(String name, int qty) {
-        Name = name;
-        this.qty = qty;
-    }
-
-    @Override
-    public String toString() {
-        return "Condiment{" +
-                "Name='" + Name + '\'' +
-                ", qty=" + qty +
-                '}';
     }
 }

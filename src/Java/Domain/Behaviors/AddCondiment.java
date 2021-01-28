@@ -4,6 +4,7 @@ public class AddCondiment implements OrderCondimentBehavior{
     @Override
     public void addCondiments(String[] condiments) {
         if (condiments[0].equals("no condiment")) {
+            System.out.println("[CoffeeMachineController] No condiments added to the drink");
             return;
         }
         StringBuilder sb = new StringBuilder();

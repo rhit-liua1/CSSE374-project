@@ -1,9 +1,10 @@
 package Java.Domain;
 
+import Java.Data.CommandStream;
 import Java.Beans.CommandBean;
+import Java.Data.Responses.DrinkResponse;
 import Java.Beans.DrinkResponseBean;
 import Java.Data.Address;
-import Java.Data.Responses.ControllerResponse;
 import Java.Domain.Behaviors.OrderCondimentBehavior;
 import Java.Domain.Behaviors.OrderDrinkBehavior;
 import Java.GsonUtil;
@@ -27,38 +28,13 @@ public abstract class CoffeeMachineController {
         this.address = address;
     }
 
-    public String processCommandStream(String json) {
+    public String processCommandStream(String commandStreamJson) {
         try {
-        	//command json obj
-			CommandBean cb = GsonUtil.parseJsonWithGson(json, CommandBean.class);
-			CommandBean.Command cmd = cb.getCommand();
-			//drink response bean
-			DrinkResponseBean db = new DrinkResponseBean();
-			DrinkResponseBean.DrinkResponse dr = db.getDrinkresponse();
-			dr.setOrderID(cmd.getOrderID());
-			dr.setStatus(this.status);
-			if (status == 0) {
-				System.out.println("[System] Controller Response received. Coffee machine status=" + status);
-				dr.setErrorcode(0);
-				dr.setErrordesc("");
-			} else {
-				int errCode = this.getErrorType();
-				System.out.println("[System] Controller Response received. Coffee machine status=" + status + ", Error="
-						+ errCode);
-				dr.setErrorcode(errCode);
-				switch (errCode) {
-					case 2:
-						dr.setErrordesc("Out of milk, drink canceled");
-						break;
-					case 26:
-						dr.setErrordesc("Machine jammed");
-						break;
-					default:
-						break;
-				}
-			}
-			String drJson = GsonUtil.serializeWithGson(db);
-			System.out.println("controller response"+drJson);
+        	//receive command json obj
+			CommandBean cb = GsonUtil.parseJsonWithGson(commandStreamJson, CommandBean.class);
+			CommandStream cmd = cb.getCommand();
+
+			String drJson = generateDRJson(cmd);
 			return drJson;
         } catch (Exception e) {
             System.out.println(e.toString());
@@ -66,20 +42,50 @@ public abstract class CoffeeMachineController {
         return "";
     }
 
-    public ControllerResponse generateCR(Order order) {
-        System.out.println("[System] Sending Order to coffee machine controller no." + this.getId());
-        int status = this.getStatus();
-        this.addCondiments(order.getCondiments());
+    private String generateDRJson(CommandStream cmd) {
+        //create new drink response
+        DrinkResponseBean db = new DrinkResponseBean();
+        DrinkResponse dr = db.getDrinkResponse();
+        dr.setOrderID(cmd.getOrderID());
+        dr.setStatus(this.status);
         if (status == 0) {
-            System.out.println("[System] Controller Response received. Coffee machine status=" + status);
-            this.produceDrink(order.getDrink());
-            return new ControllerResponse(order.getOrderId(), status);
+            System.out.println("[CoffeeMachine] Coffee machine status = " + status);
+            dr.setErrorcode(0);
+            dr.setErrordesc("");
         } else {
-            System.out.println("[System] Controller Response received. Coffee machine status=" + status + ", Error="
-                    + this.getErrorType());
-            return new ControllerResponse(order.getOrderId(), status, this.getErrorType());
+            int errCode = this.getErrorType();
+            System.out.println("[CoffeeMachine] Coffee machine status = " + status + ", Error = " + errCode);
+            dr.setErrorcode(errCode);
+            switch (errCode) {
+                case 2:
+                    dr.setErrordesc("Out of milk, drink canceled");
+                    break;
+                case 26:
+                    dr.setErrordesc("Machine jammed");
+                    break;
+                default:
+                    break;
+            }
         }
+        db.setDrinkresponse(dr);
+        String drJson = GsonUtil.serializeWithGson(db);
+        System.out.println("[CoffeeMachine] Sending back drink-response JSON object: \n" + drJson + "\n");
+        return drJson;
     }
+//    public DrinkResponse generateDR(Order order) {
+//        System.out.println("[CoffeeMachine] Order No." + order.getOrderId() + " received by CoffeeMachine No." + this.getId());
+//        int status = this.getStatus();
+//        this.addCondiments(order.getCondiments());
+//        if (status == 0) {
+//            System.out.println("[CoffeeMachine] Coffee machine status=" + status);
+//            this.produceDrink(order.getDrink());
+//            return new DrinkResponse(order.getOrderId(), status);
+//        } else {
+//            System.out.println("[System] Coffee machine status=" + status + ", Error="
+//                    + this.getErrorType());
+//            return new DrinkResponse(order.getOrderId(), status, this.getErrorType());
+//        }
+//    }
 
     ArrayList<String> condiments = new ArrayList<>();
 

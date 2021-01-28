@@ -1,6 +1,5 @@
 package Java;
 
-import Java.Beans.OrderBean;
 import Java.Server.Server;
 
 //import static sun.net.www.protocol.http.AuthCacheValue.Type.Server;

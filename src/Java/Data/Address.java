@@ -1,33 +1,35 @@
 package Java.Data;
 
 public class Address {
+    private String street;
+    private int ZIP;
 
-	private String street;
-	private String zip;
+    public Address(String street, int ZIP) {
+        this.street = street;
+        this.ZIP = ZIP;
+    }
 
-	public Address(String street, String zip) {
-		this.street = street;
-		this.zip = zip;
-	}
+    public String getStreet() {
+        return street;
+    }
 
-	public String getStreet() {
-		return street;
-	}
+    public void setStreet(String street) {
+        this.street = street;
+    }
 
-	public void setStreet(String street) {
-		this.street = street;
-	}
+    public int getZIP() {
+        return ZIP;
+    }
 
-	public String getZip() {
-		return zip;
-	}
+    public void setZIP(int ZIP) {
+        this.ZIP = ZIP;
+    }
 
-	public void setZip(String zip) {
-		this.zip = zip;
-	}
-
-	@Override
-	public String toString() {
-		return "{\"street\":\"" + street + ",\"zip\":\"" + zip + "\"}";
-	}
+    @Override
+    public String toString() {
+        return "Address{" +
+                "street='" + street + '\'' +
+                ", ZIP='" + ZIP + '\'' +
+                '}';
+    }
 }
