@@ -37,7 +37,6 @@ public class OrderManager implements Subject {
 
 	public OrderManager() {
 		this.observers = new ArrayList<>();
-//		this.coffeeMachineControllerDB = new ArrayList<>();
 		this.orders = new ArrayList<>();
 		this.coffeeTypes = new ArrayList<>();
 		this.coffeeCondiments = new ArrayList<>();
