@@ -97,7 +97,7 @@ public class OrderManager implements Subject {
 			String cmdJson = GsonUtil.serializeWithGson(cb);
 			System.out.println("[System] Sending command-stream JSON object to coffee machine: \n"+cmdJson + "\n");
 			currentMachine = cmd.getCoffee_machine_id();
-			notifyObserver(cmdJson);
+			notifyObserver(cmdJson, currentMachine);
 		} catch (Exception e) {
 			System.out.println(e.toString());
 		}
@@ -240,9 +240,9 @@ public class OrderManager implements Subject {
 	}
 
 	@Override
-	public void notifyObserver(String command) {
+	public void notifyObserver(String command, int id) {
 		for(Observer observer: observers){
-			observer.update(command, this);
+			observer.update(command, this, id);
 		}
 
 	}

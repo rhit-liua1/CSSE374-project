@@ -1,34 +1,132 @@
 @startuml
-class Data.Responses.AppResponse {
-- int machineId
-- String statusMsg
-- String errMsg
-- {static} String CANCELLED
-- {static} String PREPARED
-+ int getMachineId()
-+ void setMachineId(int)
-+ String getStatusMsg()
-+ void setStatusMsg(String)
-+ String getErrMsg()
-+ void setErrMsg(String)
-+ {static} String getCANCELLED()
-+ {static} String getPREPARED()
+interface Java.Domain.Behaviors.OrderCondimentBehavior {
+~ void addCondiments(List<Condiment>)
 }
-abstract class Domain.CoffeeMachineController {
-~ OrderCondimentBehavior ocb
-~ OrderDrinkBehavior odb
-~ int id
-~ String type
-~ int status
+class Java.GsonUtil {
+~ {static} Gson GSON
++ {static} String serializeWithGson(Object)
++ {static} T parseJsonWithGson(String,Class<T>)
++ {static} List<T> parseJsonArrayWithGson(String,Class<T>)
+}
+class Java.Domain.SimpleCoffeeMachineController {
+}
+class Java.Beans.CommandBean {
+- CommandStream commandStream
++ String toString()
++ CommandStream getCommand()
++ void setCommand(CommandStream)
+}
+class Java.Beans.DrinkResponseBean {
+~ DrinkResponse drinkresponse
++ DrinkResponse getDrinkResponse()
++ void setDrinkresponse(DrinkResponse)
++ String toString()
+}
+class Java.Data.Option {
+- String Name
+- int qty
++ String toString()
++ String getName()
++ void setName(String)
++ int getQty()
++ void setQty(int)
+}
+class Java.Domain.Behaviors.AddNoCondiment {
++ void addCondiments(List<Condiment>)
+}
+class Java.Server.Server {
+- {static} OrderManager orderManager
+- boolean isServerOn
+- boolean flag
++ void run()
+}
+class Java.Data.Order {
+~ int orderID
 ~ Address address
-~ ArrayList<Order> observers
+~ String drink
+~ List<Condiment> condiments
++ int getOrderID()
++ void setOrderID(int)
++ Address getAddress()
++ void setAddress(Address)
++ String getDrink()
++ void setDrink(String)
++ List<Condiment> getCondiments()
++ void setCondiments(List<Condiment>)
++ String toString()
+}
+class Java.Domain.Behaviors.OrderDrink {
++ void produceDrink(String)
+}
+class Java.Testcases.CoffeeMachineStrategyBehaviorTest {
++ void testSimpleController()
++ void testAdvancedController()
+}
+interface Java.Domain.Behaviors.OrderDrinkBehavior {
+~ void produceDrink(String)
+}
+interface Java.Domain.Subject {
+~ void registerObserver(Observer)
+~ void removeObserver(Observer)
+~ void notifyObserver(String,int)
+}
+class Java.Domain.AdvancedCoffeeMachineController {
+}
+class Java.Domain.Behaviors.AddCondiment {
++ void addCondiments(List<Condiment>)
+}
+class Java.Beans.UserResponseBean {
+~ UserResponse user_response
++ UserResponse getUser_response()
++ void setUser_response(UserResponse)
++ String toString()
+}
+class Java.Data.Condiment {
+- String Name
+- int qty
++ String getName()
++ void setName(String)
++ int getQty()
++ void setQty(int)
++ String toString()
+}
+class Java.Data.Responses.UserResponse {
+~ int orderID
+~ int coffee_machine_id
+~ int status
+~ String status_message
+~ String error_message
++ int getOrderID()
++ void setOrderID(int)
++ int getCoffee_machine_id()
++ void setCoffee_machine_id(int)
++ int getStatus()
++ void setStatus(int)
++ String getStatus_message()
++ void setStatus_message(String)
++ String getError_message()
++ void setError_message(String)
++ String toString()
+}
+class Java.Main {
++ {static} void main(String[])
+}
+abstract class Java.Domain.CoffeeMachineController {
+# OrderCondimentBehavior ocb
+# OrderDrinkBehavior odb
+# int id
+# String type
+# int status
+# Address address
 ~ ArrayList<String> condiments
-~ {abstract}void produceDrink(String)
-~ {abstract}void addCondiments(String[])
-~ void registerObserver(Order)
-~ void removeObserver(Order)
-~ void notifyObserver()
++ void update(String,OrderManager,int)
++ String processCommandStream(String)
+- String generateDRJson(CommandStream)
++ void produceDrink(String)
++ void addCondiments(List<Condiment>)
++ String toString()
 + int getErrorType()
++ String getErrorMsg(int)
 + OrderCondimentBehavior getOcb()
 + void setOcb(OrderCondimentBehavior)
 + OrderDrinkBehavior getOdb()
@@ -41,58 +139,19 @@ abstract class Domain.CoffeeMachineController {
 + void setStatus(int)
 + Address getAddress()
 + void setAddress(Address)
-+ ArrayList<Order> getObservers()
-+ void setObservers(ArrayList<Order>)
 + ArrayList<String> getCondiments()
 + void setCondiments(ArrayList<String>)
 }
-abstract class Data.Responses.Response {
-- int orderId
-- int status
-+ int getOrderId()
-+ void setOrderId(int)
-+ int getStatus()
-+ void setStatus(int)
-}
-class Server.Server {
-- boolean isServerOn
-- {static} OrderManager orderManager
-+ void run()
-}
-interface Domain.Behaviors.OrderDrinkBehavior {
-~ void produceDrink(String)
-}
-class Domain.Behaviors.OrderDrink {
-+ void produceDrink(String)
-}
-class Domain.Behaviors.AddNoCondiment {
-+ void addCondiments(String[])
-}
-class Data.Condiment {
-- int condimentId
-- String name
-+ void setCondimentId(int)
-+ void setName(String)
-+ int getCondimentId()
-+ String getName()
-}
-class Domain.SimpleCoffeeMachineController {
-~ void produceDrink(String)
-~ void addCondiments(String[])
-}
-interface Domain.Behaviors.OrderCondimentBehavior {
-~ void addCondiments(String[])
-}
-class Domain.Order {
+class Java.Domain.Order {
 - int orderId
 - String drink
 - Address address
 - CoffeeMachineController cm
-- ControllerResponse cr
+- DrinkResponse dr
 - String[] condiments
-+ void update(CoffeeMachineController)
-- void generateCR()
-+ ControllerResponse getCR()
++ String[] getCondiments()
++ void setCondiments(String[])
++ DrinkResponse getDrinkResponse()
 + String getDrink()
 + void setDrink(String)
 + Address getAddress()
@@ -100,63 +159,95 @@ class Domain.Order {
 + int getOrderId()
 + void setOrderId(int)
 }
-class Data.Responses.ControllerResponse {
-- String errDesc
-- int errCode
-+ String getErrDesc()
-+ void setErrDesc(String)
-+ int getErrCode()
-+ void setErrCode(int)
+class Java.Data.CommandStream {
+~ int controller_id
+~ int coffee_machine_id
+~ int orderID
+~ String DrinkName
+~ String Requesttype
+~ List<Option> Options
++ String toString()
++ int getController_id()
++ void setController_id(int)
++ int getCoffee_machine_id()
++ void setCoffee_machine_id(int)
++ int getOrderID()
++ void setOrderID(int)
++ String getDrinkName()
++ void setDrinkName(String)
++ String getRequesttype()
++ void setRequesttype(String)
++ List<Option> getOptions()
++ void setOptions(List<Option>)
 }
-class Domain.AdvancedCoffeeMachineController {
-~ void produceDrink(String)
-~ void addCondiments(String[])
-}
-interface Domain.Observer {
-~ void update(CoffeeMachineController)
-}
-class Data.Address {
-- String street
-- String zip
-+ String getStreet()
-+ void setStreet(String)
-+ String getZip()
-+ void setZip(String)
+class Java.Data.Responses.DrinkResponse {
+~ int orderID
+~ int status
+~ String errordesc
+~ int errorcode
++ void setOrderID(int)
++ void setStatus(int)
++ void setErrordesc(String)
++ void setErrorcode(int)
++ int getOrderID()
++ int getStatus()
++ String getErrordesc()
++ int getErrorcode()
 + String toString()
 }
-class Domain.Behaviors.AddCondiment {
-+ void addCondiments(String[])
+class Java.Data.Address {
+- String street
+- int ZIP
++ String getStreet()
++ void setStreet(String)
++ int getZIP()
++ void setZIP(int)
++ String toString()
 }
-class Domain.OrderManager {
+class Java.Domain.OrderManager {
 - ArrayList<Order> orders
+- String response
+- int currentMachine
+- ArrayList<Observer> observers
 - ArrayList<CoffeeMachineController> coffeeMachineControllerDB
 - ArrayList<String> coffeeTypes
 - ArrayList<String> coffeeCondiments
-+ AppResponse processOrder(int,String,Address,int,String[])
-- CoffeeMachineController findCoffeeMachineById(int)
-- AppResponse generateAppResponse(int,int)
+- ArrayList<JSONObject> jorders
++ String getResponse()
++ void setResponse(String)
++ void processOrderWithJson(String)
++ String generateUserResponseJson(DrinkResponse,int)
+- CoffeeMachineController findCoffeeMachineByAddress(Address)
++ CoffeeMachineController findCoffeeMachineById(int)
++ Address findAddressById(int)
 + ArrayList<String> getCoffeeTypes()
 + ArrayList<CoffeeMachineController> getCoffeeMachineControllerDB()
 + Order getOrderById(int)
 + ArrayList<Order> getOrders()
 + ArrayList<String> getCoffeeCondiments()
++ void orderParse()
++ void registerObserver(Observer)
++ void removeObserver(Observer)
++ void notifyObserver(String,int)
++ UserResponse processOrder(JSONObject)
+}
+interface Java.Domain.Observer {
+~ void update(String,OrderManager,int)
+}
+class Java.Beans.OrderBean {
+~ Order order
++ void setOrder(Order)
++ Order getOrder()
++ String toString()
 }
 
 
-Data.Responses.Response <|-- Data.Responses.AppResponse
-Domain.Behaviors.OrderDrinkBehavior <|.. Domain.Behaviors.OrderDrink
-Domain.Behaviors.OrderCondimentBehavior <|.. Domain.Behaviors.AddNoCondiment
-Domain.CoffeeMachineController <|-- Domain.SimpleCoffeeMachineController
-Domain.Observer <|.. Domain.Order
-Data.Responses.Response <|-- Data.Responses.ControllerResponse
-Domain.CoffeeMachineController <|-- Domain.AdvancedCoffeeMachineController
-Domain.Behaviors.OrderCondimentBehavior <|.. Domain.Behaviors.AddCondiment
-
-Domain.OrderManager --> Domain.Order
-Domain.OrderManager --> Domain.CoffeeMachineController
-Server.Server --> Domain.OrderManager
-Data.Responses.Response --> Domain.OrderManager
-Domain.Order --> Data.Address
-Domain.Order --> Domain.Behaviors.OrderDrinkBehavior
-Domain.Order --> Domain.Behaviors.OrderCondimentBehavior
+Java.Domain.CoffeeMachineController <|-- Java.Domain.SimpleCoffeeMachineController
+Java.Domain.Behaviors.OrderCondimentBehavior <|.. Java.Domain.Behaviors.AddNoCondiment
+Java.Domain.Behaviors.OrderDrinkBehavior <|.. Java.Domain.Behaviors.OrderDrink
+Java.Domain.CoffeeMachineController <|-- Java.Domain.AdvancedCoffeeMachineController
+Java.Domain.Behaviors.OrderCondimentBehavior <|.. Java.Domain.Behaviors.AddCondiment
+Java.Domain.Observer <|.. Java.Domain.CoffeeMachineController
+java.io.Serializable <|.. Java.Data.CommandStream
+Java.Domain.Subject <|.. Java.Domain.OrderManager
 @enduml

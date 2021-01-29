@@ -31,9 +31,11 @@ public abstract class CoffeeMachineController implements Observer{
     }
 
     @Override
-    public void update(String command, OrderManager orderManager) {
-        String drResponse = processCommandStream(command);
-        orderManager.setResponse(drResponse);
+    public void update(String command, OrderManager orderManager, int id) {
+        if(id == this.id) {
+            String drResponse = processCommandStream(command);
+            orderManager.setResponse(drResponse);
+        }
     }
 
     public String processCommandStream(String commandStreamJson) {
