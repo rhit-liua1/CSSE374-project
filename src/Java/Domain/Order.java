@@ -3,7 +3,7 @@ package Java.Domain;
 import Java.Data.Address;
 import Java.Data.Responses.DrinkResponse;
 
-public class Order implements Observer{
+public class Order{
 
     private int orderId;
     private String drink;
@@ -17,18 +17,10 @@ public class Order implements Observer{
         this.drink = drink;
         this.address = address;
         this.cm = cm;
-        cm.registerObserver(this);
         this.condiments = condiments;
 //        generateCR();
         //this.cr = cm.generateDR(this);
     }
-
-    @Override
-    public void update(CoffeeMachineController cm) {
-        this.cm = cm;
-        //cm.generateDR(this);
-    }
-
 
 //    private void generateCR() {
 //        this.cr = new ControllerResponse(orderId, cm.getStatus(), cm.getErrorType());

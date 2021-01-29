@@ -2,9 +2,9 @@ package Java.Domain;
 
 public interface Subject {
 
-	void registerObserver(CoffeeMachineController cm);
+	void registerObserver(Observer observer);
 
-	void removeObserver(CoffeeMachineController cm);
+	void removeObserver(Observer observer);
 
-	void notifyObserver();
+	void notifyObserver(String Command);
 }

@@ -6,8 +6,8 @@ import Java.Domain.Behaviors.OrderDrink;
 
 public class SimpleCoffeeMachineController extends CoffeeMachineController {
 
-    public SimpleCoffeeMachineController(int id, String type, int status, Address address) {
-        super(id, type, status, address);
+    public SimpleCoffeeMachineController(int id, String type, int status, Address address, Subject subject) {
+        super(id, type, status, address, subject);
         this.ocb = new AddNoCondiment();
         this.odb = new OrderDrink();
 

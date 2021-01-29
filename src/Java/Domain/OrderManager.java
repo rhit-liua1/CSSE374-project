@@ -17,6 +17,22 @@ import org.json.JSONObject;
 
 public class OrderManager implements Subject {
 	private ArrayList<Order> orders;
+	private String response;
+	private int currentMachine;
+	private ArrayList<Observer> observers;
+
+	public String getResponse() {
+		return response;
+	}
+
+	public void setResponse(String response) {
+		//Receive Drink Response and Translate into User Response
+		DrinkResponseBean db = GsonUtil.parseJsonWithGson(response,DrinkResponseBean.class);
+		DrinkResponse dr = db.getDrinkResponse();
+		String urJson = generateUserResponseJson(dr, currentMachine);//cmd.getCoffee_machine_id());
+		this.response = urJson;
+	}
+
 	private final ArrayList<CoffeeMachineController> coffeeMachineControllerDB;
 	private final ArrayList<String> coffeeTypes;
 	private final ArrayList<String> coffeeCondiments;
@@ -24,6 +40,7 @@ public class OrderManager implements Subject {
 	private ArrayList<JSONObject> jorders;
 
 	public OrderManager() {
+		this.observers = new ArrayList<>();
 		this.coffeeMachineControllerDB = new ArrayList<>();
 		this.orders = new ArrayList<>();
 		this.coffeeTypes = new ArrayList<>();
@@ -34,12 +51,12 @@ public class OrderManager implements Subject {
 		Address addr4 = new Address("18 Cana Ct.", 47804);
 		Address addr5 = new Address("500 Pen Street", 00001);
 		Address addr6 = new Address("5500 Wabash Ave", 47803);
-		this.coffeeMachineControllerDB.add(0, new SimpleCoffeeMachineController(0, "simple", 1, addr1));
-		this.coffeeMachineControllerDB.add(1, new SimpleCoffeeMachineController(1, "simple", 0, addr2));
-		this.coffeeMachineControllerDB.add(2, new AdvancedCoffeeMachineController(2, "advanced", 0, addr3));
-		this.coffeeMachineControllerDB.add(3, new AdvancedCoffeeMachineController(3, "advanced", 1, addr4));
-		this.coffeeMachineControllerDB.add(4, new SimpleCoffeeMachineController(4, "simple", 0, addr5));
-		this.coffeeMachineControllerDB.add(5, new AdvancedCoffeeMachineController(5, "advanced", 0, addr6));
+		this.coffeeMachineControllerDB.add(0, new SimpleCoffeeMachineController(0, "simple", 1, addr1, this));
+		this.coffeeMachineControllerDB.add(1, new SimpleCoffeeMachineController(1, "simple", 0, addr2, this));
+		this.coffeeMachineControllerDB.add(2, new AdvancedCoffeeMachineController(2, "advanced", 0, addr3, this));
+		this.coffeeMachineControllerDB.add(3, new AdvancedCoffeeMachineController(3, "advanced", 1, addr4, this));
+		this.coffeeMachineControllerDB.add(4, new SimpleCoffeeMachineController(4, "simple", 0, addr5, this));
+		this.coffeeMachineControllerDB.add(5, new AdvancedCoffeeMachineController(5, "advanced", 0, addr6, this));
 		this.coffeeTypes.add("americano");
 		this.coffeeTypes.add("latte");
 		this.coffeeTypes.add("decaff");
@@ -51,9 +68,10 @@ public class OrderManager implements Subject {
 		this.coffeeCondiments.add("nutrasweet");
 	}
 
-	public String processOrderWithJson(String orderInputJson) {
+	public void processOrderWithJson(String orderInputJson) {
 		try{
 			//receive a order-input json object
+			System.out.println(orderInputJson);
 			OrderBean ob = GsonUtil.parseJsonWithGson(orderInputJson,OrderBean.class);
 			Java.Data.Order od = ob.getOrder();
 
@@ -78,17 +96,11 @@ public class OrderManager implements Subject {
 			cb.setCommand(cmd);
 			String cmdJson = GsonUtil.serializeWithGson(cb);
 			System.out.println("[System] Sending command-stream JSON object to coffee machine: \n"+cmdJson + "\n");
-			String drJson = cmc.processCommandStream(cmdJson);
-
-			//Receive Drink Response and Translate into User Response
-			DrinkResponseBean db = GsonUtil.parseJsonWithGson(drJson,DrinkResponseBean.class);
-			DrinkResponse dr = db.getDrinkResponse();
-			String urJson = generateUserResponseJson(dr, cmd.getCoffee_machine_id());
-			return urJson;
+			currentMachine = cmd.getCoffee_machine_id();
+			notifyObserver(cmdJson);
 		} catch (Exception e) {
 			System.out.println(e.toString());
 		}
-		return "";
 	}
 
 	public String generateUserResponseJson(DrinkResponse dr, int machineID) {
@@ -218,18 +230,20 @@ public class OrderManager implements Subject {
 	}
 
 	@Override
-	public void registerObserver(CoffeeMachineController cm) {
-		this.coffeeMachineControllerDB.add(cm);
+	public void registerObserver(Observer cm) {
+		observers.add(cm);
 	}
 
 	@Override
-	public void removeObserver(CoffeeMachineController cm) {
-		this.coffeeMachineControllerDB.remove(cm);
+	public void removeObserver(Observer cm) {
+		observers.add(cm);
 	}
 
 	@Override
-	public void notifyObserver() {
-		// TODO Auto-generated method stub
+	public void notifyObserver(String command) {
+		for(Observer observer: observers){
+			observer.update(command, this);
+		}
 
 	}
 

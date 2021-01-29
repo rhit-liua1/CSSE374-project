@@ -139,7 +139,8 @@ public class Server {
                     System.out.println("[Client] Sending order to system...");
                     System.out.println();
 
-                    String arJson = orderManager.processOrderWithJson(orderJson);
+                    orderManager.processOrderWithJson(orderJson);
+                    String arJson = orderManager.getResponse();
                     UserResponseBean ub = GsonUtil.parseJsonWithGson(arJson, UserResponseBean.class);
                     UserResponse ur = ub.getUser_response();
 

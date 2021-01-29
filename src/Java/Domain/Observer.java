@@ -2,5 +2,5 @@ package Java.Domain;
 
 public interface Observer {
 
-    void update(CoffeeMachineController cm);
+    void update(String command, OrderManager orderManager);
 }

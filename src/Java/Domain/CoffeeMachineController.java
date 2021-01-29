@@ -14,20 +14,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public abstract class CoffeeMachineController {
+public abstract class CoffeeMachineController implements Observer{
     protected OrderCondimentBehavior ocb;
     protected OrderDrinkBehavior odb;
     protected int id;
     protected String type;
     protected int status;
     protected Address address;
-    protected ArrayList<Order> observers = new ArrayList<>();
 
-    public CoffeeMachineController(int id, String type, int status, Address address) {
+    public CoffeeMachineController(int id, String type, int status, Address address, Subject subject) {
         this.id = id;
         this.type = type;
         this.status = status;
         this.address = address;
+        subject.registerObserver(this);
+    }
+
+    @Override
+    public void update(String command, OrderManager orderManager) {
+        String drResponse = processCommandStream(command);
+        orderManager.setResponse(drResponse);
     }
 
     public String processCommandStream(String commandStreamJson) {
@@ -99,20 +105,6 @@ public abstract class CoffeeMachineController {
         }
         this.ocb.addCondiments(condiments);
     };
-
-    public void registerObserver(Order o) {
-        this.observers.add(o);
-    }
-
-    public void removeObserver(Order o) {
-        this.observers.remove(o);
-    }
-
-    public void notifyObserver() {
-        for (Order order : observers) {
-            order.update(this);
-        }
-    }
 
     @Override
     public String toString() {
@@ -186,14 +178,6 @@ public abstract class CoffeeMachineController {
 
     public void setAddress(Address address) {
         this.address = address;
-    }
-
-    public ArrayList<Order> getObservers() {
-        return observers;
-    }
-
-    public void setObservers(ArrayList<Order> observers) {
-        this.observers = observers;
     }
 
     public ArrayList<String> getCondiments() {
