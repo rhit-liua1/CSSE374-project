@@ -62,6 +62,10 @@ class Java.Testcases.CoffeeMachineStrategyBehaviorTest {
 + void testSimpleController()
 + void testAdvancedController()
 }
+
+class Java.Testcases.ObserverPatternTest {
++ void test1()
+}
 interface Java.Domain.Behaviors.OrderDrinkBehavior {
 ~ void produceDrink(String)
 }
@@ -142,23 +146,7 @@ abstract class Java.Domain.CoffeeMachineController {
 + ArrayList<String> getCondiments()
 + void setCondiments(ArrayList<String>)
 }
-class Java.Domain.Order {
-- int orderId
-- String drink
-- Address address
-- CoffeeMachineController cm
-- DrinkResponse dr
-- String[] condiments
-+ String[] getCondiments()
-+ void setCondiments(String[])
-+ DrinkResponse getDrinkResponse()
-+ String getDrink()
-+ void setDrink(String)
-+ Address getAddress()
-+ void setAddress(Address)
-+ int getOrderId()
-+ void setOrderId(int)
-}
+
 class Java.Data.CommandStream {
 ~ int controller_id
 ~ int coffee_machine_id
@@ -250,4 +238,24 @@ Java.Domain.Behaviors.OrderCondimentBehavior <|.. Java.Domain.Behaviors.AddCondi
 Java.Domain.Observer <|.. Java.Domain.CoffeeMachineController
 java.io.Serializable <|.. Java.Data.CommandStream
 Java.Domain.Subject <|.. Java.Domain.OrderManager
+Java.Data.Order --> Java.Data.Option
+Java.Data.Order --> "*" Java.Data.Condiment
+
+Java.Beans.OrderBean ...> Java.Data.Order
+Java.Beans.UserResponseBean ...> Java.Data.Responses.UserResponse
+Java.Beans.DrinkResponseBean ...> Java.Data.Responses.DrinkResponse
+Java.Beans.CommandBean ...> Java.Data.CommandStream
+
+Java.Domain.OrderManager --> Java.Beans.OrderBean
+Java.Domain.OrderManager --> Java.Beans.DrinkResponseBean
+Java.Domain.OrderManager --> Java.Beans.CommandBean
+Java.Domain.OrderManager --> Java.Beans.UserResponseBean
+Java.Domain.OrderManager --> "*" Java.Domain.Observer
+Java.Domain.Subject ..> Java.Domain.Observer
+Java.Server.Server --> Java.Domain.OrderManager
+
+Java.Domain.CoffeeMachineController --> Java.Domain.Behaviors.OrderDrinkBehavior
+Java.Domain.CoffeeMachineController --> Java.Domain.Behaviors.OrderCondimentBehavior
+
+Java.Domain.CoffeeMachineController --> Java.Data.Address
 @enduml
