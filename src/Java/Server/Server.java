@@ -2,6 +2,7 @@ package Java.Server;
 
 import Java.Data.Address;
 import Java.Data.Condiment;
+import Java.Data.Drinks.Drink;
 import Java.Data.Order;
 import Java.Beans.OrderBean;
 import Java.Data.Responses.UserResponse;
@@ -83,7 +84,8 @@ public class Server {
 				System.out.println("Please Enter the name of the drink");
 				String orderInputDrink = commandScanner.nextLine().toLowerCase();
 				// set drink to current order (for json use)
-				inputOrder.setDrink(orderInputDrink);
+				Drink drink = Drink.getDrink(orderInputDrink);
+				inputOrder.setDrink(drink.getName());
 
 				if (!orderManager.getCoffeeTypes().contains(orderInputDrink)) {
 					System.out.println("[Client] Coffee type doesn't exist. Please try again");

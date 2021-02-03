@@ -50,6 +50,7 @@ public class OrderManager implements Subject {
 		this.coffeeCondiments.add("sugar");
 		this.coffeeCondiments.add("cream");
 		this.coffeeCondiments.add("nutrasweet");
+		this.coffeeCondiments.add("hazelnut");
 
 		CoffeeControllerFactory ccf = new CoffeeControllerFactory();
 		CoffeeMachineController cm1 = ccf.getCmc("simple");
