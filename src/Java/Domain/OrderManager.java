@@ -41,18 +41,6 @@ public class OrderManager implements Subject {
 		this.orders = new ArrayList<>();
 		this.coffeeTypes = new ArrayList<>();
 		this.coffeeCondiments = new ArrayList<>();
-//		Address addr1 = new Address("200 N. Main", 47803);
-//		Address addr2 = new Address("3 S. Walnut", 60601);
-//		Address addr3 = new Address("875 Champlain Ct.", 47803);
-//		Address addr4 = new Address("18 Cana Ct.", 47804);
-//		Address addr5 = new Address("500 Pen Street", 00001);
-//		Address addr6 = new Address("5500 Wabash Ave", 47803);
-//		this.coffeeMachineControllerDB.add(0, new SimpleCoffeeMachineController(0, "simple", 1, addr1, this));
-//		this.coffeeMachineControllerDB.add(1, new SimpleCoffeeMachineController(1, "simple", 0, addr2, this));
-//		this.coffeeMachineControllerDB.add(2, new AdvancedCoffeeMachineController(2, "advanced", 0, addr3, this));
-//		this.coffeeMachineControllerDB.add(3, new AdvancedCoffeeMachineController(3, "advanced", 1, addr4, this));
-//		this.coffeeMachineControllerDB.add(4, new SimpleCoffeeMachineController(4, "simple", 0, addr5, this));
-//		this.coffeeMachineControllerDB.add(5, new AdvancedCoffeeMachineController(5, "advanced", 0, addr6, this));
 		this.coffeeTypes.add("americano");
 		this.coffeeTypes.add("latte");
 		this.coffeeTypes.add("decaff");
@@ -65,22 +53,28 @@ public class OrderManager implements Subject {
 
 		CoffeeControllerFactory ccf = new CoffeeControllerFactory();
 		CoffeeMachineController cm1 = ccf.getCmc("simple");
-		cm1.setFields(0,"simple",1,new Address("200 N. Main", 47803));
+		cm1.setFields(0,1,new Address("200 N. Main", 47803));
 
 		CoffeeMachineController cm2 = ccf.getCmc("simple");
-		cm2.setFields(1, "simple", 0, new Address("3 S. Walnut", 60601));
+		cm2.setFields(1, 0, new Address("3 S. Walnut", 60601));
 
-		CoffeeMachineController cm3 = ccf.getCmc("simple");
-		cm3.setFields(2, "advanced", 0, new Address("875 Champlain Ct.", 47803));
+		CoffeeMachineController cm3 = ccf.getCmc("advanced");
+		cm3.setFields(2, 0, new Address("875 Champlain Ct.", 47803));
 
-		CoffeeMachineController cm4 = ccf.getCmc("simple");
-		cm4.setFields(3, "advanced", 1, new Address("18 Cana Ct.", 47804));
+		CoffeeMachineController cm4 = ccf.getCmc("advanced");
+		cm4.setFields(3, 1, new Address("18 Cana Ct.", 47804));
 
 		CoffeeMachineController cm5 = ccf.getCmc("simple");
-		cm5.setFields(4, "simple", 0, new Address("500 Pen Street", 10001));
+		cm5.setFields(4,  0, new Address("500 Pen Street", 10001));
 
-		CoffeeMachineController cm6 = ccf.getCmc("simple");
-		cm6.setFields(5, "advanced", 0, new Address("5500 Wabash Ave", 47803));
+		CoffeeMachineController cm6 = ccf.getCmc("advanced");
+		cm6.setFields(5, 0, new Address("5500 Wabash Ave", 47803));
+
+		CoffeeMachineController cm7 = ccf.getCmc("programmable");
+		cm7.setFields(6, 1, new Address("6600 Fab Ave", 57044));
+
+		CoffeeMachineController cm8 = ccf.getCmc("programmable");
+		cm8.setFields(7, 0, new Address("20 Git Ave", 32900));
 
 		this.registerObserver(cm1);
 		this.registerObserver(cm2);
@@ -88,20 +82,8 @@ public class OrderManager implements Subject {
 		this.registerObserver(cm4);
 		this.registerObserver(cm5);
 		this.registerObserver(cm6);
-
-//		this.registerObserver(
-//				new SimpleCoffeeMachineController(0, "simple", 1, new Address("200 N. Main", 47803), this));
-//		this.registerObserver(
-//				new SimpleCoffeeMachineController(1, "simple", 0, new Address("3 S. Walnut", 60601), this));
-//		this.registerObserver(
-//				new AdvancedCoffeeMachineController(2, "advanced", 0, new Address("875 Champlain Ct.", 47803), this));
-//		this.registerObserver(
-//				new AdvancedCoffeeMachineController(3, "advanced", 1, new Address("18 Cana Ct.", 47804), this));
-//		this.registerObserver(
-//				new SimpleCoffeeMachineController(4, "simple", 0, new Address("500 Pen Street", 00001), this));
-//		this.registerObserver(
-//				new AdvancedCoffeeMachineController(5, "advanced", 0, new Address("5500 Wabash Ave", 47803), this));
-
+		this.registerObserver(cm7);
+		this.registerObserver(cm8);
 	}
 
 	public void processOrderWithJson(String orderInputJson) {
@@ -110,11 +92,9 @@ public class OrderManager implements Subject {
 			System.out.println(orderInputJson);
 			OrderBean ob = GsonUtil.parseJsonWithGson(orderInputJson, OrderBean.class);
 			Java.Data.Order od = ob.getOrder();
-
 			// create a command-stream json object
 			CommandBean cb = new CommandBean();
 			CommandStream cmd = cb.getCommand();
-
 			// find the right coffee machine and create command stream
 			CoffeeMachineController cmc = findCoffeeMachineByAddress(od.getAddress());
 			cmd.setController_id(cmc.getId());
@@ -127,7 +107,6 @@ public class OrderManager implements Subject {
 				Option tmpOpt = new Option(condiment.getName(), condiment.getQty());
 				optList.add(tmpOpt);
 			}
-
 			// send command-stream json object to coffee machine
 			cb.setCommand(cmd);
 			String cmdJson = GsonUtil.serializeWithGson(cb);
@@ -212,10 +191,6 @@ public class OrderManager implements Subject {
 		return coffeeCondiments;
 	}
 
-	public void orderParse() {
-
-	}
-
 	@Override
 	public void registerObserver(Observer cm) {
 		observers.add(cm);
@@ -231,7 +206,5 @@ public class OrderManager implements Subject {
 		for (Observer observer : observers) {
 			observer.update(command, this, id);
 		}
-
 	}
-
 }

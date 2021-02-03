@@ -30,18 +30,17 @@ public class CoffeeMachineStrategyBehaviorTest {
 
         System.out.println();
         System.out.println("Testing with SimpleController 1: ");
-        CoffeeMachineController s1 = new SimpleCoffeeMachineController(0, "simple", 0, addr1, new OrderManager());
+        CoffeeMachineController s1 = new SimpleCoffeeMachineController(0, 0, addr1, new OrderManager());
         System.out.println(s1.toString());
         s1.produceDrink("Latte");
         s1.addCondiments(condiments);
 
         System.out.println();
         System.out.println("Testing with SimpleController 2: ");
-        CoffeeMachineController s2 = new SimpleCoffeeMachineController(1, "simple", 1, addr2, new OrderManager());
+        CoffeeMachineController s2 = new SimpleCoffeeMachineController(1, 1, addr2, new OrderManager());
         System.out.println(s2.toString());
         s2.produceDrink("Americano");
         s2.addCondiments(condiments);
-
     }
 
     @Test
@@ -57,14 +56,16 @@ public class CoffeeMachineStrategyBehaviorTest {
 
         System.out.println();
         System.out.println("Testing with AdvancedController 1: ");
-        CoffeeMachineController a1 = new AdvancedCoffeeMachineController(2, "advanced", 0, addr3, new OrderManager());
+        //TODO:USE FACTORY
+        CoffeeMachineController a1 = new AdvancedCoffeeMachineController(2, 0, addr3, new OrderManager());
         System.out.println(a1.toString());
         a1.produceDrink("Pumpkin Spice");
         a1.addCondiments(condiments);
 
         System.out.println();
         System.out.println("Testing with AdvancedController 1: ");
-        CoffeeMachineController a2 = new AdvancedCoffeeMachineController(3, "advanced", 1, addr4, new OrderManager());
+        //TODO:USE FACTORY
+        CoffeeMachineController a2 = new AdvancedCoffeeMachineController(3, 1, addr4, new OrderManager());
         System.out.println(a2.toString());
         a2.produceDrink("Espresso");
         a2.addCondiments(condiments);

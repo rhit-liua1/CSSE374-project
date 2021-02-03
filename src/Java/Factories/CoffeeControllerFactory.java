@@ -5,20 +5,15 @@ import Java.Domain.*;
 
 public class CoffeeControllerFactory {
 
-    CoffeeMachineController cmc;
-
     public CoffeeMachineController getCmc(String type) {
         switch (type) {
             case "simple":
-                cmc = new SimpleCoffeeMachineController();
-                break;
-            case "advance":
-                cmc = new AdvancedCoffeeMachineController();
-                break;
+                return new SimpleCoffeeMachineController();
+            case "advanced":
+                return new AdvancedCoffeeMachineController();
             case "programmable":
-                cmc = new ProgrammableCoffeeMachineController();
-                break;
+                return new ProgrammableCoffeeMachineController();
         }
-        return cmc;
+        return null;
     }
 }

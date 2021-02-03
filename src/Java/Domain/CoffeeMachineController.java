@@ -3,11 +3,13 @@ package Java.Domain;
 import Java.Data.CommandStream;
 import Java.Beans.CommandBean;
 import Java.Data.Condiment;
+import Java.Data.Recipe;
 import Java.Data.Responses.DrinkResponse;
 import Java.Beans.DrinkResponseBean;
 import Java.Data.Address;
 import Java.Domain.Behaviors.OrderCondimentBehavior;
 import Java.Domain.Behaviors.OrderDrinkBehavior;
+import Java.Domain.Behaviors.OrderRecipeBehavior;
 import Java.GsonUtil;
 
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import java.util.Random;
 public abstract class CoffeeMachineController implements Observer {
 	protected OrderCondimentBehavior ocb;
 	protected OrderDrinkBehavior odb;
+	protected OrderRecipeBehavior orb;
 	protected int id;
 	protected String type;
 	protected int status;
@@ -24,16 +27,14 @@ public abstract class CoffeeMachineController implements Observer {
 
 	public CoffeeMachineController() {}
 
-	public CoffeeMachineController(int id, String type, int status, Address address, Subject subject) {
+	public CoffeeMachineController(int id, int status, Address address, Subject subject) {
 		this.id = id;
-		this.type = type;
 		this.status = status;
 		this.address = address;
 	}
 
-	public void setFields(int id, String type, int status, Address address) {
+	public void setFields(int id, int status, Address address) {
 		this.id = id;
-		this.type = type;
 		this.status = status;
 		this.address = address;
 	}
@@ -51,9 +52,7 @@ public abstract class CoffeeMachineController implements Observer {
 			// receive command json obj
 			CommandBean cb = GsonUtil.parseJsonWithGson(commandStreamJson, CommandBean.class);
 			CommandStream cmd = cb.getCommand();
-
-			String drJson = generateDRJson(cmd);
-			return drJson;
+			return generateDRJson(cmd);
 		} catch (Exception e) {
 			System.out.println(e.toString());
 		}
@@ -81,21 +80,6 @@ public abstract class CoffeeMachineController implements Observer {
 		System.out.println("[CoffeeMachine] Sending back drink-response JSON object: \n" + drJson + "\n");
 		return drJson;
 	}
-//    public DrinkResponse generateDR(Order order) {
-//        System.out.println("[CoffeeMachine] Order No." + order.getOrderId() + " received by CoffeeMachine No." + this.getId());
-//        int status = this.getStatus();
-//        this.addCondiments(order.getCondiments());
-//        if (status == 0) {
-//            System.out.println("[CoffeeMachine] Coffee machine status=" + status);
-//            this.produceDrink(order.getDrink());
-//            return new DrinkResponse(order.getOrderId(), status);
-//        } else {
-//            System.out.println("[System] Coffee machine status=" + status + ", Error="
-//                    + this.getErrorType());
-//            return new DrinkResponse(order.getOrderId(), status, this.getErrorType());
-//        }
-//    }
-
 	ArrayList<String> condiments = new ArrayList<>();
 
 	public void produceDrink(String drink) {
@@ -108,8 +92,16 @@ public abstract class CoffeeMachineController implements Observer {
 		this.odb.produceDrink(drink);
 	};
 
+	public void handleRecipes(List<Recipe> recipes) {
+		if (this.status == 1) {
+			return;
+		}
+		this.orb.handleRecipe(recipes);
+	}
+
 	public void addCondiments(List<Condiment> condiments) {
 		if (this.status == 1) {
+			//TODO: print err msg
 //            int errCode = this.getErrorType();
 //            System.out.println("[CoffeeMachine] Error. Cannot add condiments. errorCode = " + errCode + " errorMessage = " + this.getErrorMsg(errCode));
 			return;
@@ -167,10 +159,6 @@ public abstract class CoffeeMachineController implements Observer {
 		return type;
 	}
 
-	public void setType(String type) {
-		this.type = type;
-	}
-
 	public int getStatus() {
 		return status;
 	}
@@ -194,5 +182,4 @@ public abstract class CoffeeMachineController implements Observer {
 	public void setCondiments(ArrayList<String> condiments) {
 		this.condiments = condiments;
 	}
-
 }
