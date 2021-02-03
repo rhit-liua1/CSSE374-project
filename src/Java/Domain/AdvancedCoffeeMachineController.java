@@ -12,6 +12,8 @@ public class AdvancedCoffeeMachineController extends CoffeeMachineController {
         this.odb = new OrderDrink();
     }
 
+    public AdvancedCoffeeMachineController() {}
+
 //    @Override
 //    public void produceDrink(String drink) {
 //        this.odb.produceDrink(drink);

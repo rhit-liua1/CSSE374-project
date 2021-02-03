@@ -8,6 +8,7 @@ import Java.Data.Responses.DrinkResponse;
 import Java.Beans.DrinkResponseBean;
 import Java.Data.Responses.UserResponse;
 import Java.Beans.UserResponseBean;
+import Java.Factories.CoffeeControllerFactory;
 import Java.GsonUtil;
 
 import java.util.ArrayList;
@@ -61,18 +62,45 @@ public class OrderManager implements Subject {
 		this.coffeeCondiments.add("sugar");
 		this.coffeeCondiments.add("cream");
 		this.coffeeCondiments.add("nutrasweet");
-		this.registerObserver(
-				new SimpleCoffeeMachineController(0, "simple", 1, new Address("200 N. Main", 47803), this));
-		this.registerObserver(
-				new SimpleCoffeeMachineController(1, "simple", 0, new Address("3 S. Walnut", 60601), this));
-		this.registerObserver(
-				new AdvancedCoffeeMachineController(2, "advanced", 0, new Address("875 Champlain Ct.", 47803), this));
-		this.registerObserver(
-				new AdvancedCoffeeMachineController(3, "advanced", 1, new Address("18 Cana Ct.", 47804), this));
-		this.registerObserver(
-				new SimpleCoffeeMachineController(4, "simple", 0, new Address("500 Pen Street", 00001), this));
-		this.registerObserver(
-				new AdvancedCoffeeMachineController(5, "advanced", 0, new Address("5500 Wabash Ave", 47803), this));
+
+		CoffeeControllerFactory ccf = new CoffeeControllerFactory();
+		CoffeeMachineController cm1 = ccf.getCmc("simple");
+		cm1.setFields(0,"simple",1,new Address("200 N. Main", 47803));
+
+		CoffeeMachineController cm2 = ccf.getCmc("simple");
+		cm2.setFields(1, "simple", 0, new Address("3 S. Walnut", 60601));
+
+		CoffeeMachineController cm3 = ccf.getCmc("simple");
+		cm3.setFields(2, "advanced", 0, new Address("875 Champlain Ct.", 47803));
+
+		CoffeeMachineController cm4 = ccf.getCmc("simple");
+		cm4.setFields(3, "advanced", 1, new Address("18 Cana Ct.", 47804));
+
+		CoffeeMachineController cm5 = ccf.getCmc("simple");
+		cm5.setFields(4, "simple", 0, new Address("500 Pen Street", 10001));
+
+		CoffeeMachineController cm6 = ccf.getCmc("simple");
+		cm6.setFields(5, "advanced", 0, new Address("5500 Wabash Ave", 47803));
+
+		this.registerObserver(cm1);
+		this.registerObserver(cm2);
+		this.registerObserver(cm3);
+		this.registerObserver(cm4);
+		this.registerObserver(cm5);
+		this.registerObserver(cm6);
+
+//		this.registerObserver(
+//				new SimpleCoffeeMachineController(0, "simple", 1, new Address("200 N. Main", 47803), this));
+//		this.registerObserver(
+//				new SimpleCoffeeMachineController(1, "simple", 0, new Address("3 S. Walnut", 60601), this));
+//		this.registerObserver(
+//				new AdvancedCoffeeMachineController(2, "advanced", 0, new Address("875 Champlain Ct.", 47803), this));
+//		this.registerObserver(
+//				new AdvancedCoffeeMachineController(3, "advanced", 1, new Address("18 Cana Ct.", 47804), this));
+//		this.registerObserver(
+//				new SimpleCoffeeMachineController(4, "simple", 0, new Address("500 Pen Street", 00001), this));
+//		this.registerObserver(
+//				new AdvancedCoffeeMachineController(5, "advanced", 0, new Address("5500 Wabash Ave", 47803), this));
 
 	}
 

@@ -22,7 +22,16 @@ public abstract class CoffeeMachineController implements Observer {
 	protected int status;
 	protected Address address;
 
+	public CoffeeMachineController() {}
+
 	public CoffeeMachineController(int id, String type, int status, Address address, Subject subject) {
+		this.id = id;
+		this.type = type;
+		this.status = status;
+		this.address = address;
+	}
+
+	public void setFields(int id, String type, int status, Address address) {
 		this.id = id;
 		this.type = type;
 		this.status = status;

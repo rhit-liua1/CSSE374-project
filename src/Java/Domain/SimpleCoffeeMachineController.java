@@ -10,8 +10,9 @@ public class SimpleCoffeeMachineController extends CoffeeMachineController {
         super(id, type, status, address, subject);
         this.ocb = new AddNoCondiment();
         this.odb = new OrderDrink();
-
     }
+
+    public SimpleCoffeeMachineController() {}
 
 //    @Override
 //    public void produceDrink(String drink) {

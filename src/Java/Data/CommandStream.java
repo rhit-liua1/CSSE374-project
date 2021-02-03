@@ -11,6 +11,7 @@ public class CommandStream implements Serializable {
 	String DrinkName;
 	String Requesttype;
 	List<Option> Options = new ArrayList<>();
+	List<Recipe> Recipe = new ArrayList<>();
 
 	@Override
 	public String toString() {
@@ -29,6 +30,14 @@ public class CommandStream implements Serializable {
 		this.DrinkName = drinkName;
 		this.Requesttype = Requesttype;
 //            this.Options.add(new Option("Cream", 2));
+	}
+
+	public List<Java.Data.Recipe> getRecipe() {
+		return Recipe;
+	}
+
+	public void setRecipe(List<Java.Data.Recipe> recipe) {
+		Recipe = recipe;
 	}
 
 	public int getController_id() {
