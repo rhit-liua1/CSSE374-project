@@ -42,10 +42,6 @@ OrderManager -> Order : startOrder(order, orderInputMachineNumber)
 deactivate Order
 OrderManager -> CommandStream : process Order input
 activate CommandStream
-CommandStream -> Recipe : set command step
-activate Recipe
-Recipe --> CommandStream
-deactivate Recipe
 CommandStream --> CoffeeMachineController  : handleRecipes
 deactivate CommandStream
 activate CoffeeMachineController
