@@ -337,4 +337,34 @@ Java.Data.Ingredients.IngredientDecorator <|-- Java.Data.Ingredients.Sugar
 Java.Data.Ingredients.IngredientDecorator <|-- Java.Data.Ingredients.PumpkinSpiceIng
 Java.Data.Ingredients.IngredientDecorator <|-- Java.Data.Ingredients.Nutmeg
 Java.Data.Drinks.Drink <|-- Java.Data.Drinks.Latte
+
+
+Java.Beans.OrderBean ...> Java.Data.Order
+Java.Beans.UserResponseBean ...> Java.Data.Responses.UserResponse
+Java.Beans.DrinkResponseBean ...> Java.Data.Responses.DrinkResponse
+Java.Beans.CommandBean ...> Java.Data.CommandStream
+
+Java.Domain.OrderManager --> Java.Beans.OrderBean
+Java.Domain.OrderManager --> Java.Beans.DrinkResponseBean
+Java.Domain.OrderManager --> Java.Beans.CommandBean
+Java.Domain.OrderManager --> Java.Beans.UserResponseBean
+Java.Domain.OrderManager --> "*" Java.Domain.Observer
+Java.Domain.Subject ..> Java.Domain.Observer
+Java.Server.Server --> Java.Domain.OrderManager
+
+Java.Domain.CoffeeMachineController --> Java.Domain.Behaviors.OrderDrinkBehavior
+Java.Domain.CoffeeMachineController --> Java.Domain.Behaviors.OrderCondimentBehavior
+Java.Domain.CoffeeMachineController --> Java.Domain.Behaviors.OrderRecipeBehavior
+
+
+Java.Domain.CoffeeMachineController --> Java.Data.Address
+
+Java.Domain.OrderManager --> Java.Data.Option
+
+Java.Factories.CoffeeControllerFactory ...> Java.Domain.CoffeeMachineController
+
+Java.Factories.CoffeeControllerFactory ...> Java.Data.Drinks
+
+Java.Domain.OrderManager --> Java.Data.Recipe
+Java.Domain.OrderManager --> Java.Data.Condiment
 @enduml
