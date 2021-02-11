@@ -22,7 +22,7 @@ public abstract class IngredientDecorator extends Drink {
 
     @Override
     public String getDescription() {
-        return drink.getDescription();
+        return drink == null? this.name : drink.getDescription();
     }
 
     public Drink getDrink() {
@@ -30,10 +30,14 @@ public abstract class IngredientDecorator extends Drink {
     }
 
     public String getName() {
-        return name;
+        return drink == null? this.name : drink.getName();
     }
 
     public String getActualDescription() {
         return drink == null? this.actualDescription : drink.getActualDescription() + ", " + this.actualDescription;
+    }
+
+    public String getRecipeNeeded() {
+        return drink == null? "" : drink.getRecipeNeeded();
     }
 }

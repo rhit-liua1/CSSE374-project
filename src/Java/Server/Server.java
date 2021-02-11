@@ -2,7 +2,6 @@ package Java.Server;
 
 import Java.Data.Address;
 import Java.Data.Condiment;
-import Java.Data.Drinks.Drink;
 import Java.Data.Order;
 import Java.Beans.OrderBean;
 import Java.Data.Responses.UserResponse;
@@ -33,8 +32,10 @@ public class Server {
 		Scanner commandScanner = new Scanner(System.in);
 
 		while (isServerOn) {
-			System.out.println("[Server] command list: \n" + "> shutdown -- will shut down the server;\n"
-					+ "> neworder -- will create a new player and game;\n" + "Now, please enter a server command: ");
+			System.out.println("[Server] command list: \n" +
+					"> neworder -- will create a new player and game;\n" +
+					"> shutdown -- will shut down the server;\n" +
+					"Now, please enter a server command: ");
 			String command = commandScanner.nextLine();
 
 			switch (command) { // pave future stories for command pattern
@@ -52,6 +53,7 @@ public class Server {
 				Order inputOrder = new Order();
 				StringBuilder sb = new StringBuilder();
 				System.out.println();
+				//get input coffee machine
 				sb.append("[Client] Select a coffee machine: \n");
 				for (Observer cm : orderManager.getCoffeeMachineControllerDB()) {
 					sb.append("> (");
@@ -64,7 +66,7 @@ public class Server {
 				}
 				System.out.println(sb.toString());
 				sb.append("[Client] Enter a number to choose a coffee machine: ");
-				// TODO
+
 				int orderInputMachineNumber = Integer.parseInt(commandScanner.nextLine());
 
 				if (orderInputMachineNumber < 0
@@ -73,6 +75,8 @@ public class Server {
 					System.out.println();
 					break;
 				}
+
+				// get input drink
 				System.out.println();
 				System.out.println("[Client] Choose a drink from below: ");
 				System.out.println("> Americano : Regular caffeinated coffee");
@@ -84,15 +88,16 @@ public class Server {
 				System.out.println("Please Enter the name of the drink");
 				String orderInputDrink = commandScanner.nextLine().toLowerCase();
 				// set drink to current order (for json use)
-				Drink drink = Drink.getDrink(orderInputDrink);
-				inputOrder.setDrink(drink.getName());
+				//Drink drink = DrinkFactory.getDrink(orderInputDrink);
 
-				if (!orderManager.getCoffeeTypes().contains(orderInputDrink)) {
-					System.out.println("[Client] Coffee type doesn't exist. Please try again");
+				if (!orderManager.getDrinkTypes().contains(orderInputDrink)) {
+					System.out.println("[Client] Drink type doesn't exist. Please try again");
 					System.out.println();
 					break;
 				}
+				inputOrder.setDrink(orderInputDrink);
 
+				// get input condiments
 				System.out.println();
 				System.out.println("[Client] Select condiments from below: ");
 				System.out.println("> Cream : Diary based individual serving");
@@ -127,15 +132,17 @@ public class Server {
 				// set condiments to current order (for json use)
 				inputOrder.setCondiments(condiments);
 
-				Address address = orderManager.findAddressById(orderInputMachineNumber);
 				// set address to current order json
+				Address address = orderManager.findAddressById(orderInputMachineNumber);
 				inputOrder.setAddress(address);
+
 				// set orderID to current order json
 				inputOrder.setOrderID(globalOrderCounter++);
 
+				// Send order
 				ob.setOrder(inputOrder);
 				String orderJson = GsonUtil.serializeWithGson(ob);
-				System.out.println("[Client] order-input JSON object Created: \n" + orderJson + "\n");
+				System.out.println("[Client] order-input JSON object Created: \n			" + orderJson);
 				System.out.println("[Client] Sending order to system...");
 				System.out.println();
 

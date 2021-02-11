@@ -7,10 +7,10 @@ import java.util.List;
 public class AddCondiment implements OrderCondimentBehavior{
     @Override
     public void addCondiments(List<Condiment> condiments) {
-//        if (condiments.get(0).equals("no condiment")) {
-//            System.out.println("[CoffeeMachineController] No condiments added to the drink");
-//            return;
-//        }
+        if (condiments.isEmpty()) {
+            System.out.println("[CoffeeMachineController] No condiments added to the drink");
+            return;
+        }
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < condiments.size(); i++) {

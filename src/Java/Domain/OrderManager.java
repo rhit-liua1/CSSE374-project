@@ -90,7 +90,6 @@ public class OrderManager implements Subject {
 	public void processOrderWithJson(String orderInputJson) {
 		try {
 			// receive a order-input json object
-			System.out.println(orderInputJson);
 			OrderBean ob = GsonUtil.parseJsonWithGson(orderInputJson, OrderBean.class);
 			Java.Data.Order od = ob.getOrder();
 			// create a command-stream json object
@@ -111,7 +110,7 @@ public class OrderManager implements Subject {
 			// send command-stream json object to coffee machine
 			cb.setCommand(cmd);
 			String cmdJson = GsonUtil.serializeWithGson(cb);
-			System.out.println("[System] Sending command-stream JSON object to coffee machine: \n" + cmdJson + "\n");
+			System.out.println("[System] Sending command-stream JSON object to coffee machine: \n			" + cmdJson + "\n");
 			currentMachine = cmd.getCoffee_machine_id();
 			notifyObserver(cmdJson, currentMachine);
 		} catch (Exception e) {
@@ -137,7 +136,7 @@ public class OrderManager implements Subject {
 		ur.setError_message(dr.getErrordesc());
 		ub.setUser_response(ur);
 		String urJson = GsonUtil.serializeWithGson(ub);
-		System.out.println("[System] Sending user-response JSON object to user: \n" + urJson + "\n");
+		System.out.println("[System] Sending user-response JSON object to user: \n			" + urJson + "\n");
 		return urJson;
 	}
 
@@ -167,7 +166,7 @@ public class OrderManager implements Subject {
 		return findCoffeeMachineById(id).getAddress();
 	}
 
-	public ArrayList<String> getCoffeeTypes() {
+	public ArrayList<String> getDrinkTypes() {
 		return coffeeTypes;
 	}
 

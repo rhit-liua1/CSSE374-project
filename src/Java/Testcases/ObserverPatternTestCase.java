@@ -34,6 +34,7 @@ public class ObserverPatternTestCase {
 		String arJson = OM.getResponse();
 		UserResponseBean ub = GsonUtil.parseJsonWithGson(arJson, UserResponseBean.class);
 		UserResponse ur = ub.getUser_response();
+		System.out.println("--------------------------------------------------");
 		if (ur.getStatus() == 1) {
 			System.out.println("> Order Status: " + ur.getStatus_message());
 			System.out.println("> Error: " + ur.getError_message());

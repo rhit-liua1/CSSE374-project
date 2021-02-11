@@ -22,6 +22,7 @@ public class AddRecipe implements OrderRecipeBehavior{
                 sb.append(", ");
             }
         }
-        System.out.println("[CoffeeMachineController] Drink prepared with recipe steps " + sb.toString());
+//                                                                                      + sb.toString()
+        System.out.println("[CoffeeMachineController] Drink prepared with recipe steps.");
     }
 }
