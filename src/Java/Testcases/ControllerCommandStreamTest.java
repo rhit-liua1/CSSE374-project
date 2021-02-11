@@ -24,7 +24,7 @@ public class ControllerCommandStreamTest {
     public void testSimpleController(){
         System.out.println();
         System.out.println();
-        System.out.println("Initializing some fake simple coffee machine controllers...");
+        System.out.println("Initializing some simple coffee machine controllers...");
 
         CoffeeControllerFactory ccf = new CoffeeControllerFactory();
         Address addr1 = new Address("200 N. Main", 47803);
@@ -57,7 +57,7 @@ public class ControllerCommandStreamTest {
     public void testAdvancedController(){
         System.out.println();
         System.out.println();
-        System.out.println("Initializing some fake advanced coffee machine controllers...");
+        System.out.println("Initializing some advanced coffee machine controllers...");
 
         CoffeeControllerFactory ccf = new CoffeeControllerFactory();
         Address addr1 = new Address("200 N. Main", 47803);
@@ -86,11 +86,12 @@ public class ControllerCommandStreamTest {
         cm2.processCommandStream(cmd2);
     }
 
+    // For UC3
     @Test
-    public void testProgrammableController(){
+    public void testProgrammableControllerWithIngredients(){
         System.out.println();
         System.out.println();
-        System.out.println("Initializing some fake programmable coffee machine controllers...");
+        System.out.println("Initializing some programmable coffee machine controllers...");
 
         CoffeeControllerFactory ccf = new CoffeeControllerFactory();
         Address addr1 = new Address("200 N. Main", 47803);
@@ -115,5 +116,37 @@ public class ControllerCommandStreamTest {
         System.out.println(cm2.toString());
         System.out.println("Command Stream JSON: " + cmd1);
         cm2.processCommandStream(cmd1);
+    }
+
+    // For UC4
+    @Test
+    public void testProgrammableControllerWithRecipes(){
+        System.out.println();
+        System.out.println();
+        System.out.println("Initializing some programmable coffee machine controllers...");
+
+        CoffeeControllerFactory ccf = new CoffeeControllerFactory();
+        Address addr1 = new Address("200 N. Main", 47803);
+        Address addr2 = new Address("3 S. Walnut", 60601);
+        CoffeeMachineController cm1 = ccf.getCmc("programmable");
+        cm1.setFields(0,0, addr1);
+
+        CoffeeMachineController cm2 = ccf.getCmc("programmable");
+        cm2.setFields(1, 0, addr2);
+
+        String cmd1 = "{\"commandStream\":{\"controller_id\":0,\"coffee_machine_id\":0,\"orderID\":1,\"DrinkName\":\"Pumpkin Spice\",\"Requesttype\":\"programmable\",\"Options\":[{\"Name\":\"sugar\",\"qty\":2}],\"Recipe\":[{\"commandstep\":\"add\", \"object\":\"coffee\"}, {\"commandstep\":\"add\", \"object\":\"pumpkin spice\"}, {\"commandstep\":\"mix\", \"object\":\"\"}, {\"commandstep\":\"top\", \"object\":\"nutmeg\"}]}}";
+        String cmd2 = "{\"commandStream\":{\"controller_id\":1,\"coffee_machine_id\":1,\"orderID\":2,\"DrinkName\":\"Latte\",\"Requesttype\":\"programmable\",\"Options\":[{\"Name\":\"hazelnut\",\"qty\":2}],\"Recipe\":[{\"commandstep\":\"steam\", \"object\":\"milk\"}, {\"commandstep\":\"add\", \"object\":\"espresso\"}, {\"commandstep\":\"top\", \"object\":\"whipped cream\"}]}}";
+
+        System.out.println();
+        System.out.println("Test ProgrammableController 1: ");
+        System.out.println(cm1.toString());
+        System.out.println("Command Stream JSON: " + cmd1);
+        cm1.processCommandStream(cmd1);
+
+        System.out.println();
+        System.out.println("Test ProgrammableController 2: ");
+        System.out.println(cm2.toString());
+        System.out.println("Command Stream JSON: " + cmd2);
+        cm2.processCommandStream(cmd2);
     }
 }
