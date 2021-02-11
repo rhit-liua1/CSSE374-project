@@ -10,6 +10,7 @@ public class AddRecipe implements OrderRecipeBehavior{
     public void handleRecipe(List<Recipe> recipes) {
         if (recipes.isEmpty()) {
             System.out.println("[CoffeeMachineController] No recipe available");
+            return;
         }
         StringBuilder sb = new StringBuilder();
 
