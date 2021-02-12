@@ -1,0 +1,96 @@
+@startuml
+
+package Domain {
+
+package Decorator {
+package IngredientsDecorator {}
+
+}
+
+package FactoryPattern {
+package CoffeeControllerFactory{}
+}
+
+package OberserverPattern {
+	interface Subject
+	
+	class OrderManager implements Subject
+	
+	Package CoffeeMachineController {}
+	
+	interface Observer
+	
+	CoffeeMachineController --|> Observer
+	
+	Subject ...> Observer 
+	
+	OrderManager -->  "*" Observer
+}
+
+Package StrategyPatterm {
+package Behaviors{}
+
+Package Beans {
+class Comment {
+//Beans are used to generate different .json
+
+//This is not real class, just used for comment
+}
+}
+}
+CoffeeMachineController --> Beans
+CoffeeControllerFactory ...> CoffeeController
+}
+
+CoffeeController --> Behaviors
+
+package Data {
+
+package Response {}
+
+package Drink {}
+
+class Address
+
+class Recipe
+
+class Condiment
+
+class Option
+
+class Order
+
+class CommandStream
+
+
+
+}
+
+
+Decorator --|> Drink
+
+package Present {
+
+class Server
+
+Package TestCases {}
+}
+
+
+
+Server --> OrderManager
+
+CoffeeControllerFactory ...> Drink
+
+CoffeeControllerFactory  ...> OrderManager
+
+TestCases --> Server
+
+Beans --> Address
+Beans --> Recipe
+Beans --> Condiment
+Beans --> Option
+Beans --> Order
+Beans --> CommandStream
+Beans --> Response
+@enduml
